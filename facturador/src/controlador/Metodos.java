@@ -1,12 +1,18 @@
 package controlador;
 
+import com.toedter.calendar.JDateChooser;
 import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Window;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 import static vista.JFramePrincipal.jpnlPrincipal;
 
 public class Metodos {
@@ -84,6 +91,21 @@ public class Metodos {
         }
     }
     
+    //puede llegar a tener hasta 4 decimales
+    public static String FormatoDecimalOperar(Double numero){
+        DecimalFormat df = new DecimalFormat("#0.00##");
+        String num = df.format(numero);
+        return num;
+    }
+    
+    // 2 decimales
+    public static String FormatoDecimalMostrar(String numero){
+        double n = Double.parseDouble(numero);
+        DecimalFormat df = new DecimalFormat("#0.00");
+        String num = df.format(n);
+        return num;
+    }
+    
     public static String ConvertirNumTexto(String numero, String moneda) {
         String moneda_texto;
         ConvertirNumeroTexto NumLetra = new ConvertirNumeroTexto();
@@ -116,6 +138,16 @@ public class Metodos {
         return fecha_sunat;
     }
     
+    public static String FechaFormatoSUNAT(String fecha){
+        //se crea objeto de tipo Date
+        String dia = fecha.substring(0,2);
+        String mes = fecha.substring(3,5);
+        String anio = fecha.substring(6,10);
+        //envio al text field al mismo tiempo se cambia el formato
+        String fecha_sunat = anio+"-"+mes+"-"+dia;
+        return fecha_sunat;
+    }
+    
     public static String ObtenerHora() {
         Calendar calendario = Calendar.getInstance();
         String hh, mm, ss;
@@ -124,6 +156,21 @@ public class Metodos {
         ss = String.format("%02d", (calendario.get(Calendar.SECOND)));
         String hora_completa = hh + ":" + mm + ":" + ss;
         return hora_completa;
+    }
+    
+    public static Boolean ExistePDF(String carpeta,String id){
+        Boolean b;
+        File archivo = null;
+        if (carpeta.equalsIgnoreCase("Facturas")){
+            archivo = new File(Rutas.getRutaFacturaPDF(id));
+        } else {
+            archivo = new File(Rutas.getRutaBajaPDF(id));
+        }
+        if (archivo.exists())
+            b = true;
+        else
+            b = false;
+        return b;
     }
     
     public static void AbrirPDF(String carpeta, String nombre){
@@ -137,6 +184,60 @@ public class Metodos {
             System.out.println("Error abriendo PDF: " + nombre + ".pdf\n" + e);
             Metodos.MensajeError("Error abriendo PDF: " + nombre + ".pdf\n" + e);
         }
+    }
+    
+    public static String getHash(String archivo) throws FileNotFoundException, IOException {
+        String cadena;
+        String linea5 = null;// se encuentra hash en XML
+        String hash;
+        
+        FileReader fr = new FileReader(archivo);
+        BufferedReader br = new BufferedReader(fr);
+        
+        long numeroLinea = 0;
+        while ((cadena = br.readLine()) != null) {
+            numeroLinea ++;
+            if(numeroLinea == 5)
+                linea5 = cadena;
+        }
+        br.close();
+        hash = linea5.substring(linea5.indexOf("<ds:DigestValue>"),linea5.indexOf("</ds:DigestValue>"));
+        //eliminando los primeros 16 caracteres
+        hash = hash.substring(16);
+        return hash;
+    }
+    
+    public static void LimpiarTabla(JTable tabla) {
+        //limpiar jtable para que no se dupliquen datos
+        DefaultTableModel dtm = (DefaultTableModel) tabla.getModel();
+        int a = tabla.getRowCount() - 1;
+        for (int i = a; i >= 0; i--) {
+            dtm.removeRow(dtm.getRowCount() - 1);
+        }
+    }
+    
+    //convierte a String un JDateChooser
+    public static String CapturarDateChooser(JDateChooser jDateChooser){
+        String fecha_final = "error";
+        try {
+            if(jDateChooser.getDate() == null){//Si es nulo
+                fecha_final = "";
+            } else {//si tiene una fecha válida
+                String formato_fecha = jDateChooser.getDateFormatString();
+                Date fecha = jDateChooser.getDate();
+                SimpleDateFormat sdf = new SimpleDateFormat(formato_fecha);
+                fecha_final = String.valueOf(sdf.format(fecha));
+            }
+        } catch (Exception e) {
+            Metodos.MensajeError("Error al capturar el JdateChooser 'jDateChooser'\n"+e);
+        }
+        return fecha_final;
+    }
+    
+    // YYYYMMDD
+    public static String FechaActualFormatoSUNATSinGuiones(){
+        String fecha = FechaActualFormatoSUNAT();
+        return fecha.replace("-", "");
     }
     
 }

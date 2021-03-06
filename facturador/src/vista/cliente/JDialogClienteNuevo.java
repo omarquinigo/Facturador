@@ -46,6 +46,22 @@ public class JDialogClienteNuevo extends javax.swing.JDialog {
         }
         return Id;
     }
+    
+    boolean ExisteCliente(String numeroDocumento){
+        boolean existe = false;
+        try {
+            rs = Cliente.Consulta("select * \n"
+                    + "from cliente \n"
+                    + "where numeroDocumento = '"+numeroDocumento+"' ;");
+            String fila[] = new String[4];
+            while (rs.next()) {
+                existe = true;
+            }
+            rs.close();
+        } catch (Exception e) {
+        }
+        return existe;
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -196,12 +212,18 @@ public class JDialogClienteNuevo extends javax.swing.JDialog {
                 || direccion.equalsIgnoreCase("")) {
             Metodos.MensajeAlerta("Verificar datos.");
         } else {
-            try {
-                Cliente.Registrar(id,tipoDocumento,numeroDocumento,
-                        nombreRazonSocial,direccion);
-                dispose();
-            } catch (SQLException ex) {
-                Logger.getLogger(JDialogClienteNuevo.class.getName()).log(Level.SEVERE, null, ex);
+            if (ExisteCliente(numeroDocumento) == true) {
+                Metodos.MensajeAlerta("El cliente con el número de documento " + numeroDocumento + " \n"
+                        + "ya se encuentra registrado en el sistema.");
+
+            } else {
+                try {
+                    Cliente.Registrar(id, tipoDocumento, numeroDocumento,
+                            nombreRazonSocial, direccion);
+                    dispose();
+                } catch (SQLException ex) {
+                    Logger.getLogger(JDialogClienteNuevo.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }//GEN-LAST:event_jbtnRegistrarActionPerformed

@@ -82,19 +82,21 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
 
     public void AgregarDetalle() {
         //capturo los datos del detalle
-        double cantidad = Double.parseDouble(jtxtCantidad.getText());
+        String cantidad = Metodos.FormatoDecimalOperar(Double.parseDouble(jtxtCantidad.getText()));
         String tipoUnidad = jcbxTipoUnidad.getSelectedItem().toString();
-        double precioUnitario = Double.parseDouble(jtxtPrecioUnitario.getText());
+        String precioUnitario = Metodos.FormatoDecimalOperar(Double.parseDouble(jtxtPrecioUnitario.getText()));
         String descripcion = jtxtDescripcion.getText();
-        double precioTotal = cantidad * precioUnitario;
+        String precioTotal = Metodos.FormatoDecimalOperar(Double.parseDouble(cantidad) * Double.parseDouble(precioUnitario));
         dtmDetalle = (DefaultTableModel) jtblDetalle.getModel();
-        Object[] fila = new Object[6];
+        Object[] fila = new Object[7];
         fila[0] = "";
-        fila[1] = cantidad;
+        fila[1] = Metodos.FormatoDecimalMostrar(cantidad);
         fila[2] = tipoUnidad;
         fila[3] = descripcion;
-        fila[4] = precioUnitario;
-        fila[5] = precioTotal;
+        fila[4] = Metodos.FormatoDecimalMostrar(precioUnitario);
+        fila[5] = Metodos.FormatoDecimalMostrar(precioTotal);
+        // precioTotal 4 decimales (no se muestra)
+        fila[6] = precioTotal;
         dtmDetalle.addRow(fila);
         jtblDetalle.setModel(dtmDetalle);
         //se limpia los campos
@@ -111,28 +113,29 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
     }
 
     public void ActualizarTotales() {
-        double importe = 0.00;
-        double igv = 0.00;
-        double importeTotal = 0.00;
+        String importe = "0.0000";
+        String igv = "0.00";
+        String importeTotal = "0.00";
         int numero_filas = jtblDetalle.getRowCount();
         for (int i = 0; i < numero_filas; i++) {
-            //operamos para obtener los totales
-            double precio_total = Double.parseDouble(jtblDetalle.getValueAt(i, 5).toString());
-            importe += precio_total;//acumulamos total ventas gravadas
-            igv = (0.18 * importe);
-            importeTotal = (importe + igv);
-            //mostrando datos actualizados
-            jtxtImporte.setText(String.valueOf(importe));
-            jtxtIgv.setText(String.valueOf(igv));
-            jtxtImporteTotal.setText(String.valueOf(importeTotal));
+            //capturo importeTotal con decimales
+            double importe_decimal = Double.parseDouble(jtblDetalle.getModel().getValueAt(i, 6).toString());
+            //acumulamos todos los importes
+            importe =  String.valueOf(Double.parseDouble(importe) + importe_decimal);
         }
+        igv = String.valueOf(Double.parseDouble(importe)*0.18);
+        importeTotal = String.valueOf(Double.parseDouble(importe) + Double.parseDouble(igv));
+        //mostrando totales actualizados
+        jtxtImporte.setText(Metodos.FormatoDecimalMostrar(importe));
+        jtxtIgv.setText(Metodos.FormatoDecimalMostrar(igv));
+        jtxtImporteTotal.setText(Metodos.FormatoDecimalMostrar(importeTotal));
         // enviamos el monto en texto
         String moneda = jcbxMoneda.getSelectedItem().toString();
-        String montoEnTexto = Metodos.ConvertirNumTexto(String.valueOf(importeTotal), moneda);
+        String montoEnTexto = Metodos.ConvertirNumTexto(Metodos.FormatoDecimalMostrar(importeTotal), moneda);
         jlblMontoEnTexto.setText(montoEnTexto);
     }
     
-    void CrearArchivosPlanos(){
+    public void CrearArchivosPlanos(){
         ArchivoPlanoCAB();
         ArchivoPlanoDET();
         ArchivoPlanoTRI();
@@ -140,7 +143,7 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         Metodos.MensajeInformacion("Archivos planos generados.");
     }
     
-    void ArchivoPlanoCAB(){
+    public void ArchivoPlanoCAB(){
         //se crea archivo con el nombre establecido
         File ap = new File(Rutas.getRutaAP("01", id, "CAB"));
         //para almacenar datos
@@ -214,9 +217,9 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
                 //recorremos la tabla detealle para capturar los datos
                 for (int i = 0; i < jtblDetalle.getRowCount(); i++) {
                     //guardamos los campos en variables
-                    String Cantidad = String.valueOf(jtblDetalle.getValueAt(i, 1).toString()).replace(",", "");
-                    String PrecioUnitario = String.valueOf(jtblDetalle.getValueAt(i, 4).toString()).replace(",", "");
-                    String PrecioTotal = String.valueOf(jtblDetalle.getValueAt(i, 5).toString()).replace(",", "");
+                    String Cantidad = (jtblDetalle.getValueAt(i, 1).toString()).replace(",", "");
+                    String PrecioUnitario = (jtblDetalle.getValueAt(i, 4).toString()).replace(",", "");
+                    String PrecioTotal = (jtblDetalle.getValueAt(i, 5).toString()).replace(",", "");
                     String Descripcion = jtblDetalle.getValueAt(i, 3).toString().replaceAll("\n", "");// sin salto de linea
                     //36 valores SUNAT DET SFS 1.3.4.2
                     String codigo_unidad_medida_item = "EA";//???antes EA
@@ -225,7 +228,7 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
                     String codigo_producto_sunat = "-";
                     String descripcion_detallada = Descripcion;
                     String valor_unitario_item = PrecioUnitario;
-                    String sumatoria_tributos_item = String.valueOf((Double.parseDouble(cantidad_unidades_item) * Double.parseDouble(valor_unitario_item)) * 0.18);
+                    String sumatoria_tributos_item = Metodos.FormatoDecimalMostrar(String.valueOf(Double.parseDouble(PrecioTotal)*0.18));
                     String codigo_tipo_tributo_igv = "1000";//hace referencia al IGV
                     String monto_igv_item = sumatoria_tributos_item;
                     String base_imponible_igv_item = PrecioTotal;
@@ -252,7 +255,7 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
                     String nombre_icbper_item = "";
                     String codigo_icbper_item = "";
                     String monto_icbper_unidad = "";
-                    String precio_venta_unitario = String.valueOf(Double.parseDouble(PrecioUnitario) + (Double.parseDouble(PrecioUnitario) * 0.18));
+                    String precio_venta_unitario = Metodos.FormatoDecimalMostrar(String.valueOf(Double.parseDouble(PrecioUnitario) + (Double.parseDouble(PrecioUnitario) * 0.18)));
                     String valor_venta_item = base_imponible_igv_item;
                     String valor_referencial_gratuito = "0.00";
                     //se esccribe la linea en el archivo
@@ -441,11 +444,9 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         jtxtId = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(255, 192, 192));
-        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel1.setText("Factura nueva");
-        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 14, -1, -1));
+        jLabel1.setText("Factura N°");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 204));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Cliente:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
@@ -475,6 +476,11 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         jcbxMoneda.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jcbxMoneda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PEN", "USD" }));
         jcbxMoneda.setEnabled(false);
+        jcbxMoneda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jcbxMonedaActionPerformed(evt);
+            }
+        });
 
         jbtnBuscar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jbtnBuscar.setText("Buscar");
@@ -494,42 +500,42 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(jLabel2)
                     .addComponent(jLabel4))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jtxtDireccion, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jtxtTipoDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel14)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel14)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(289, 289, 289)
-                        .addComponent(jLabel6)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jtxtDireccion)
-                    .addComponent(jtxtNombreRazonSocial))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jtxtNombreRazonSocial, javax.swing.GroupLayout.Alignment.LEADING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jbtnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                    .addComponent(jcbxMoneda, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jcbxMoneda, 0, 100, Short.MAX_VALUE))
+                    .addComponent(jbtnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jtxtTipoDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addComponent(jcbxMoneda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14)
-                    .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jcbxMoneda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -540,11 +546,8 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
                             .addComponent(jtxtDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jbtnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jbtnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
-
-        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 38, -1, -1));
 
         jPanel2.setBackground(new java.awt.Color(141, 170, 235));
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Detalle:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
@@ -555,11 +558,11 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
 
             },
             new String [] {
-                "tem", "Cantidad", "Tipo uni.", "Descripción", "Precio unit.", "Importe"
+                "Item", "Cantidad", "Tipo unidad", "Descripción", "Precio unittario", "Importe", "null"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, true, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -575,6 +578,9 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
             jtblDetalle.getColumnModel().getColumn(3).setPreferredWidth(300);
             jtblDetalle.getColumnModel().getColumn(4).setPreferredWidth(100);
             jtblDetalle.getColumnModel().getColumn(5).setPreferredWidth(100);
+            jtblDetalle.getColumnModel().getColumn(6).setMinWidth(0);
+            jtblDetalle.getColumnModel().getColumn(6).setPreferredWidth(0);
+            jtblDetalle.getColumnModel().getColumn(6).setMaxWidth(0);
         }
 
         jbtnAgregar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -595,8 +601,10 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
             }
         });
 
+        jLabel7.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel7.setText("Descripción:");
 
+        jLabel8.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel8.setText("Cantidad:");
 
         jLabel9.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -608,6 +616,7 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         jtxtCantidad.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jtxtCantidad.setEnabled(false);
 
+        jtxtDescripcion.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jtxtDescripcion.setEnabled(false);
 
         jLabel15.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -623,45 +632,41 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel8)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel15)
-                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel15)
+                            .addComponent(jLabel9))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jtxtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel7))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jcbxTipoUnidad, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(76, 76, 76))))
+                            .addComponent(jtxtCantidad)
+                            .addComponent(jcbxTipoUnidad, 0, 100, Short.MAX_VALUE)
+                            .addComponent(jtxtPrecioUnitario)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel9)
+                        .addComponent(jbtnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jtxtPrecioUnitario, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jbtnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbtnQuitar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jbtnQuitar, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)))
+                .addGap(30, 30, 30)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addComponent(jtxtDescripcion))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jtxtDescripcion))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 624, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(jtxtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7)
-                    .addComponent(jtxtDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jtxtDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel15)
                             .addComponent(jcbxTipoUnidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -672,22 +677,16 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jbtnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbtnQuitar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGap(13, 13, 13)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jbtnQuitar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(22, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
         );
-
-        add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 165, 880, -1));
 
         jLabel5.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel5.setText("Fecha:");
-        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(759, 14, -1, -1));
 
         jtxtFecha.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jtxtFecha.setEnabled(false);
-        add(jtxtFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 11, 90, -1));
 
         jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -701,14 +700,17 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         jLabel12.setText("Importe Total:");
 
         jtxtImporte.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtImporte.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jtxtImporte.setText("0.00");
         jtxtImporte.setEnabled(false);
 
         jtxtIgv.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtIgv.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jtxtIgv.setText("0.00");
         jtxtIgv.setEnabled(false);
 
-        jtxtImporteTotal.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtImporteTotal.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+        jtxtImporteTotal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jtxtImporteTotal.setText("0.00");
         jtxtImporteTotal.setEnabled(false);
 
@@ -747,28 +749,74 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(675, 370, -1, -1));
-
         jbtnCrearArchivosPlanos.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jbtnCrearArchivosPlanos.setText("Crear Archivos Planos");
+        jbtnCrearArchivosPlanos.setEnabled(false);
         jbtnCrearArchivosPlanos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbtnCrearArchivosPlanosActionPerformed(evt);
             }
         });
-        add(jbtnCrearArchivosPlanos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 429, 200, 40));
 
         jLabel13.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jLabel13.setText("SON:");
-        add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 349, -1, -1));
 
         jlblMontoEnTexto.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jlblMontoEnTexto.setText("?");
-        add(jlblMontoEnTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(56, 349, 834, -1));
 
         jtxtId.setEditable(false);
         jtxtId.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        add(jtxtId, new org.netbeans.lib.awtextra.AbsoluteConstraints(108, 11, 240, -1));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jbtnCrearArchivosPlanos, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jtxtId, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jtxtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jlblMontoEnTexto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jtxtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jtxtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlblMontoEnTexto)
+                    .addComponent(jLabel13))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jbtnCrearArchivosPlanos, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbtnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnAgregarActionPerformed
@@ -819,6 +867,10 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         JPanelComprobantes jpc = new JPanelComprobantes();
         Metodos.CambiarPanel(jpc);
     }//GEN-LAST:event_jbtnCrearArchivosPlanosActionPerformed
+
+    private void jcbxMonedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbxMonedaActionPerformed
+        ActualizarTotales();
+    }//GEN-LAST:event_jcbxMonedaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

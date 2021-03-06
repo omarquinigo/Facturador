@@ -23,7 +23,8 @@ public class Config {
     }
     
     public static void Actualizar(String ruc, String razonSocial,
-            String direccion, String rutaSunat) throws SQLException {
+            String direccion, String rutaSunat, String rutaPdf)
+            throws SQLException {
         try {
             Connection con = Conexion.getConexion();
             Statement stmt = con.createStatement();
@@ -32,7 +33,8 @@ public class Config {
                     + "ruc = '" + ruc + "', "
                     + "razonSocial = '" + razonSocial + "', "
                     + "direccion = '" + direccion + "', "
-                    + "rutaSunat = '" + rutaSunat + "' \n"
+                    + "rutaSunat = '" + rutaSunat + "', "
+                    + "rutaPdf = '" + rutaPdf + "' \n"
                     + "where id = '1';";
             stmt.execute(sql);
             con.close();

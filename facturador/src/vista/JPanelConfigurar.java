@@ -23,10 +23,12 @@ public class JPanelConfigurar extends javax.swing.JPanel {
                 String razonSocial = rs.getString("razonSocial");
                 String direccion = rs.getString("direccion");
                 String rutaSunat = rs.getString("rutaSunat");
+                String rutaPdf  = rs.getString("rutaPdf");
                 jtxtRuc.setText(ruc);
                 jtxtRazonSocial.setText(razonSocial);
                 jtxtDireccion.setText(direccion);
                 jtxtRutaSunat.setText(rutaSunat);
+                jtxtRutaPdf.setText(rutaPdf);
             }
             rs.close();
         } catch (Exception e) {
@@ -49,6 +51,8 @@ public class JPanelConfigurar extends javax.swing.JPanel {
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jtxtRutaSunat = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        jtxtRutaPdf = new javax.swing.JTextField();
         jbtnGuardar = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 192, 192));
@@ -116,15 +120,24 @@ public class JPanelConfigurar extends javax.swing.JPanel {
 
         jtxtRutaSunat.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
 
+        jLabel5.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jLabel5.setText("Ruta PDF:");
+
+        jtxtRutaPdf.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel4)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5))
                 .addGap(18, 18, 18)
-                .addComponent(jtxtRutaSunat)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jtxtRutaSunat, javax.swing.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
+                    .addComponent(jtxtRutaPdf))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -134,7 +147,11 @@ public class JPanelConfigurar extends javax.swing.JPanel {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(jtxtRutaSunat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(109, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jtxtRutaPdf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(80, Short.MAX_VALUE))
         );
 
         jbtnGuardar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -164,7 +181,7 @@ public class JPanelConfigurar extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jbtnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -177,9 +194,9 @@ public class JPanelConfigurar extends javax.swing.JPanel {
         String razonSocial = jtxtRazonSocial.getText();
         String direccion = jtxtDireccion.getText();
         String rutaSunat = jtxtRutaSunat.getText().replace("\\", "\\\\");
-        
+        String rutaPdf = jtxtRutaPdf.getText().replace("\\", "\\\\");
         try {
-            Config.Actualizar(ruc, razonSocial, direccion, rutaSunat);
+            Config.Actualizar(ruc, razonSocial, direccion, rutaSunat, rutaPdf);
         } catch (Exception e) {
 
         }
@@ -191,12 +208,14 @@ public class JPanelConfigurar extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JButton jbtnGuardar;
     private javax.swing.JTextField jtxtDireccion;
     private javax.swing.JTextField jtxtRazonSocial;
     private javax.swing.JTextField jtxtRuc;
+    private javax.swing.JTextField jtxtRutaPdf;
     private javax.swing.JTextField jtxtRutaSunat;
     // End of variables declaration//GEN-END:variables
 }

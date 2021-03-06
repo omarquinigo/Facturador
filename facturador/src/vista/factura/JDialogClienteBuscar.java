@@ -31,7 +31,8 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
             dtmClientes = (DefaultTableModel) jtblClientes.getModel();
             dtmClientes.setRowCount(0);
             rs = Cliente.Consulta("select *\n"
-                    + "from Cliente;");
+                    + "from cliente \n"
+                    + "where tipoDocumento = 'RUC';");
             String fila[] = new String[4];
             while (rs.next()) {
                 fila[0] = rs.getString("id");
