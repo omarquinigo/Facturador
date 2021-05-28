@@ -49,10 +49,10 @@ public class JDialogVersion extends javax.swing.JDialog {
         jPanel1.setBackground(new java.awt.Color(141, 170, 235));
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel1.setText("Versión: 1.0.1");
+        jLabel1.setText("Versión: 1.0.2");
 
         jLabel2.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel2.setText("Versión Facturador SUNAT: 1.3.4.2");
+        jLabel2.setText("Versión Facturador SUNAT: 1.3.4.4");
 
         jLabel3.setFont(new java.awt.Font("Tw Cen MT", 3, 24)); // NOI18N
         jLabel3.setText("By Omashi");

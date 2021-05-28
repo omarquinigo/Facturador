@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -163,6 +164,12 @@ public class Metodos {
         File archivo = null;
         if (carpeta.equalsIgnoreCase("Facturas")){
             archivo = new File(Rutas.getRutaFacturaPDF(id));
+        } else if (carpeta.equalsIgnoreCase("Boletas")){
+            archivo = new File(Rutas.getRutaBoletaPDF(id));
+        } else if (carpeta.equalsIgnoreCase("NotasCredito")){
+            archivo = new File(Rutas.getRutaNotaCreditoPDF(id));
+        } else if (carpeta.equalsIgnoreCase("NotasDebito")){
+            archivo = new File(Rutas.getRutaNotaDebitoPDF(id));
         } else {
             archivo = new File(Rutas.getRutaBajaPDF(id));
         }
@@ -178,6 +185,14 @@ public class Metodos {
             File archivo = null;
             if(carpeta.equalsIgnoreCase("Factura")){
                 archivo = new File(Rutas.getRutaFacturaPDF(nombre));
+            } else if(carpeta.equalsIgnoreCase("Boleta")){
+                archivo = new File(Rutas.getRutaBoletaPDF(nombre));
+            } else if(carpeta.equalsIgnoreCase("NotaCredito")){
+                archivo = new File(Rutas.getRutaNotaCreditoPDF(nombre));
+            } else if(carpeta.equalsIgnoreCase("NotaDebito")){
+                archivo = new File(Rutas.getRutaNotaDebitoPDF(nombre));
+            } else {
+                archivo = new File(Rutas.getRutaBajaPDF(nombre));
             }
             Desktop.getDesktop().open(archivo);
         } catch (Exception e) {
@@ -238,6 +253,85 @@ public class Metodos {
     public static String FechaActualFormatoSUNATSinGuiones(){
         String fecha = FechaActualFormatoSUNAT();
         return fecha.replace("-", "");
+    }
+    
+    // obtener código de medio de Pago Catálogo 59
+    public static String ObtenerCodigoMedioPago(String mp){
+        String codigo;
+        if(mp.equalsIgnoreCase("Depósito en cuenta")){
+            codigo = "001";
+        }else if (mp.equalsIgnoreCase("Giro")){
+            codigo = "002";
+        }else if (mp.equalsIgnoreCase("Transferencia de fondos")){
+            codigo = "003";
+        }else if (mp.equalsIgnoreCase("Orden de pago")){
+            codigo = "004";
+        }else if (mp.equalsIgnoreCase("Tarjeta de débito")){
+            codigo = "005";
+        }else if (mp.equalsIgnoreCase("Efectivo")){
+            codigo = "008";
+        }else if (mp.equalsIgnoreCase("Tarjeta de crédito")){
+            codigo = "012";
+        }else{
+            codigo = "999";
+        }
+        return codigo;
+    }
+    
+    //catalogo 9
+    public static String CodigoTipoNotaCredito (JComboBox jcbxTipoNotaCredito){
+        String tipo_nota_credito;
+        int indice = jcbxTipoNotaCredito.getSelectedIndex();
+        if (indice == 1) {
+            tipo_nota_credito = "01";
+        } else if (indice == 2) {
+            tipo_nota_credito = "02";
+        } else if (indice == 3) {
+            tipo_nota_credito = "03";
+        } else if (indice == 4) {
+            tipo_nota_credito = "04";
+        } else if (indice == 5) {
+            tipo_nota_credito = "05";
+        } else if (indice == 6) {
+            tipo_nota_credito = "06";
+        } else if (indice == 7) {
+            tipo_nota_credito = "07";
+        } else if (indice == 8) {
+            tipo_nota_credito = "08";
+        } else if (indice == 9) {
+            tipo_nota_credito = "09";
+        } else {
+            tipo_nota_credito = "error";
+        }
+        return tipo_nota_credito;
+    }
+    
+    //catalogo 10
+    public static String CodigoTipoNotaDebito (JComboBox jcbxTipoNotaDebito){
+        String tipo_nota_debito;
+        int indice = jcbxTipoNotaDebito.getSelectedIndex();
+        if (indice == 1) {
+            tipo_nota_debito = "01";
+        } else if (indice == 2) {
+            tipo_nota_debito = "02";
+        } else if (indice == 3) {
+            tipo_nota_debito = "03";
+        } else {
+            tipo_nota_debito = "error";
+        } 
+        return tipo_nota_debito;
+    }
+    
+    public static String ObtenerCodigoTipoDocumento(String tipoDoc){
+        String codigo_tipo_documento = "";
+        if(tipoDoc.equalsIgnoreCase("RUC")){
+            codigo_tipo_documento = "6";
+        } else if(tipoDoc.equalsIgnoreCase("DNI")){
+            codigo_tipo_documento = "1";
+        } else if(tipoDoc.equalsIgnoreCase("Carne de extrangeria")){
+            codigo_tipo_documento = "4";
+        } else codigo_tipo_documento = "7";
+        return codigo_tipo_documento;
     }
     
 }

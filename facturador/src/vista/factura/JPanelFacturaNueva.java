@@ -29,7 +29,7 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         String nombreFactura = "FF01-";//valor que siempre tendrá
         try {
             rs = Factura.Consulta("select *\n"
-                    + "from Factura;");
+                    + "from factura;");
             if(rs.last() == true){
                 // obtengo el id
                 String Id = rs.getString("id");
@@ -140,6 +140,7 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         ArchivoPlanoDET();
         ArchivoPlanoTRI();
         ArchivoPlanoLEY();
+        ArchivoPlanoACA();
         Metodos.MensajeInformacion("Archivos planos generados.");
     }
     
@@ -362,16 +363,63 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         }
     }
     
+    public void ArchivoPlanoACA(){
+        //se crea archivo con el nombre establecido
+        File ap = new File(Rutas.getRutaAP("01", id, "ACA"));
+        BufferedWriter bufferedWriter;
+        if (ap.exists()) {
+            Metodos.MensajeError("Error generando archivo\n"
+                    + "plano '" + id + ".ACA':\n"
+                    + "El archivo ya existe");
+        } else {
+            try {
+                bufferedWriter = new BufferedWriter(new FileWriter(ap));
+                String cuenta_detraccion = "";
+                String codigo_producto_detraccion = "";
+                String porcentaje_detraccion = "";
+                String monto_detraccion = "";
+                String medio_pago = Metodos.ObtenerCodigoMedioPago(jcbxMedioPago.getSelectedItem().toString());
+                //direccion cliente
+                String direccion_cliente_pais = "-";
+                String direccion_cliente_ubigeo = "-";
+                String direccion_cliente_detallada = "-";
+                //direccion distinta a la del cliente
+                String direccion_cliente_pais_distinta = "-";
+                String direccion_cliente_ubigeo_distinta = "-";
+                String direccion_cliente_detallada_distinta = "-";
+                //se esccribe la linea en el archivo
+                bufferedWriter.write(
+                        cuenta_detraccion + "|"
+                        + codigo_producto_detraccion + "|"
+                        + porcentaje_detraccion + "|"
+                        + monto_detraccion + "|"
+                        + medio_pago + "|"
+                        + direccion_cliente_pais + "|"
+                        + direccion_cliente_ubigeo + "|"
+                        + direccion_cliente_detallada + "|"
+                        + direccion_cliente_pais_distinta + "|"
+                        + direccion_cliente_ubigeo_distinta + "|"                                
+                        + direccion_cliente_detallada_distinta
+                );
+                bufferedWriter.close();
+            } catch (Exception e) {
+                System.out.println("Error creando archivo plano " + id + ".ACA:\n" + e);
+                Metodos.MensajeError("Error creando archivo plano " + id + ".ACA:\n" + e);
+            }
+        }
+    }
+    
     private void RegistrarFactura() {
         //capturamos los datos a enviar desde el frame
         String fecha = jtxtFecha.getText();
         String moneda = jcbxMoneda.getSelectedItem().toString();
+        String medioPago = jcbxMedioPago.getSelectedItem().toString();
         String totalVentasGravadas = jtxtImporte.getText();
         String igv = jtxtIgv.getText();
         String totalImporteVenta = jtxtImporteTotal.getText();
         try {
             Factura.RegistrarFactura(id, idCliente, fecha,
-                    moneda, totalVentasGravadas, igv, totalImporteVenta);
+                    moneda, medioPago, totalVentasGravadas, igv, totalImporteVenta);
         } catch (Exception e) {
             System.out.println("Error registrando factura a la base de datos: \n" + e);
             Metodos.MensajeError("Error registrando factura a la base de datos: \n" + e);
@@ -416,6 +464,8 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         jbtnBuscar = new javax.swing.JButton();
         jLabel14 = new javax.swing.JLabel();
         jtxtNumeroDocumento = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
+        jcbxMedioPago = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jtblDetalle = new javax.swing.JTable();
@@ -449,7 +499,7 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         jLabel1.setText("Factura N°");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 204));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Cliente:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Cabecera:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 12))); // NOI18N
         jPanel1.setFont(new java.awt.Font("Arial", 0, 11)); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -496,6 +546,14 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         jtxtNumeroDocumento.setEditable(false);
         jtxtNumeroDocumento.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
 
+        jLabel16.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jLabel16.setText("Medio de pago:");
+
+        jcbxMedioPago.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jcbxMedioPago.setMaximumRowCount(9);
+        jcbxMedioPago.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Seleccione-", "Depósito en cuenta", "Giro", "Transferencia de fondos", "Orden de pago", "Tarjeta de débito", "Efectivo", "Tarjeta de crédito", "Otros" }));
+        jcbxMedioPago.setEnabled(false);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -515,7 +573,10 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
                         .addComponent(jLabel14)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel16)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jcbxMedioPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jtxtNombreRazonSocial, javax.swing.GroupLayout.Alignment.LEADING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -529,13 +590,17 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jtxtTipoDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel14)
-                    .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jcbxMoneda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel16)
+                        .addComponent(jcbxMedioPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(jtxtTipoDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel14)
+                        .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jcbxMoneda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel6)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -678,7 +743,7 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jbtnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jbtnQuitar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(22, Short.MAX_VALUE))
+                        .addContainerGap(31, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
         );
 
@@ -861,11 +926,16 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
     }//GEN-LAST:event_jbtnBuscarActionPerformed
 
     private void jbtnCrearArchivosPlanosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnCrearArchivosPlanosActionPerformed
-        CrearArchivosPlanos();
-        RegistrarFactura();
-        RegistrarFacturaDet();
-        JPanelComprobantes jpc = new JPanelComprobantes();
-        Metodos.CambiarPanel(jpc);
+        // valido medio de pago
+        if(jcbxMedioPago.getSelectedIndex() == 0){
+            Metodos.MensajeAlerta("Seleccione el medio de pago.");
+        }else {
+            CrearArchivosPlanos();
+            RegistrarFactura();
+            RegistrarFacturaDet();
+            JPanelComprobantes jpc = new JPanelComprobantes();
+            Metodos.CambiarPanel(jpc);
+        }
     }//GEN-LAST:event_jbtnCrearArchivosPlanosActionPerformed
 
     private void jcbxMonedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbxMonedaActionPerformed
@@ -881,6 +951,7 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -897,6 +968,7 @@ public class JPanelFacturaNueva extends javax.swing.JPanel {
     public static javax.swing.JButton jbtnBuscar;
     private javax.swing.JButton jbtnCrearArchivosPlanos;
     private javax.swing.JButton jbtnQuitar;
+    public static javax.swing.JComboBox<String> jcbxMedioPago;
     public static javax.swing.JComboBox<String> jcbxMoneda;
     public static javax.swing.JComboBox<String> jcbxTipoUnidad;
     private javax.swing.JLabel jlblMontoEnTexto;

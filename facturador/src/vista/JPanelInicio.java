@@ -35,11 +35,11 @@ public class JPanelInicio extends javax.swing.JPanel {
 
         jlblVersion.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jlblVersion.setForeground(new java.awt.Color(255, 255, 255));
-        jlblVersion.setText("Versión Facturador SUNAT 1.3.4.2");
+        jlblVersion.setText("Versión Facturador SUNAT 1.3.4.4");
 
         jlblVersionFacturadorSUNAT.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jlblVersionFacturadorSUNAT.setForeground(new java.awt.Color(255, 255, 255));
-        jlblVersionFacturadorSUNAT.setText("Versión 1.0.1");
+        jlblVersionFacturadorSUNAT.setText("Versión 1.0.2");
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/cpe.png"))); // NOI18N

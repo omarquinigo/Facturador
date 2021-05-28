@@ -30,9 +30,11 @@ public class JDialogClienteNuevo extends javax.swing.JDialog {
         String Id = "";
         try {
             rs = Cliente.Consulta("select id \n"
-                    + "from cliente;");
+                    + "from cliente \n"
+                    + "ORDER BY CAST(id as SIGNED );");
             if(rs.last() == true){
-                String Codigo = rs.getString("Id");
+                String Codigo = rs.getString("id");
+                //String Codigo = ("50");
                 int numero_cliente = Integer.parseInt(Codigo) + 1;//convierto a entero para sumar +1
                 String CodigoCliente = String.valueOf(numero_cliente);
                 Id = CodigoCliente;

@@ -98,14 +98,29 @@ public class Rutas {
             }
             rs.close();
         } catch (Exception e) {
-            System.out.println("Error cargando ruta de SUNAT: \n" + e);
-            Metodos.MensajeError("Error cargando ruta de SUNAT: \n" + e);
+            System.out.println("Error cargando ruta de los PDFs: \n" + e);
+            Metodos.MensajeError("Error cargando ruta de los PDFs: \n" + e);
         }
         return rutaPdf;
     }
   
     public static String getRutaFacturaPDF(String id) {
         String ruta = getRutaPdf() + "\\Facturas\\" + id + ".pdf";
+        return ruta;
+    }
+    
+    public static String getRutaBoletaPDF(String id) {
+        String ruta = getRutaPdf() + "\\Boletas\\" + id + ".pdf";
+        return ruta;
+    }
+    
+    public static String getRutaNotaCreditoPDF(String id) {
+        String ruta = getRutaPdf() + "\\Notas Credito\\" + id + ".pdf";
+        return ruta;
+    }
+    
+    public static String getRutaNotaDebitoPDF(String id) {
+        String ruta = getRutaPdf() + "\\Notas Debito\\" + id + ".pdf";
         return ruta;
     }
     

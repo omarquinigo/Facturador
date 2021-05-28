@@ -32,15 +32,15 @@ public class Factura {
     }
 
     public static void RegistrarFactura(String id, String idCliente, String fecha,
-            String moneda, String totalVentasGrabadas, String igv,
+            String moneda, String medioPago, String totalVentasGrabadas, String igv,
             String importeTotal) throws SQLException {
         try {
             Connection con = Conexion.getConexion();
             Statement stmt = con.createStatement();
-            String sql = "insert into Factura \n"
-                    + "(id,idCliente,fecha,moneda,TotalVentasGravadas,igv,importeTotal) \n"
+            String sql = "insert into factura \n"
+                    + "(id,idCliente,fecha,moneda,medioPago,TotalVentasGravadas,igv,importeTotal) \n"
                     + "values ('" + id + "','" + idCliente + "','" + fecha + "','" 
-                    + moneda + "','" + totalVentasGrabadas + "','" + igv + "','"
+                    + moneda + "','" + medioPago + "','" + totalVentasGrabadas + "','" + igv + "','"
                     + importeTotal + "');";
             stmt.execute(sql);
             con.close();
@@ -55,7 +55,7 @@ public class Factura {
         try {
             Connection con = Conexion.getConexion();
             Statement stmt = con.createStatement();
-            String sql = "insert into FacturaDet \n"
+            String sql = "insert into facturadet \n"
                     + "(id,idFactura,item,cantidad,tipoUnidad,descripcion,"
                     + "valorUnitario,precioUnitarioItem) \n"
                     + "values ('" + id + "','" + idFactura + "','" + item + "','" 

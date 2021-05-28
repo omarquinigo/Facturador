@@ -24,7 +24,8 @@ public class JPanelClienteListar extends javax.swing.JPanel {
             dtmClientes = (DefaultTableModel) jtblClientes.getModel();
             dtmClientes.setRowCount(0);
             rs = Cliente.Consulta("select * \n"
-                    + "from cliente;");
+                    + "from cliente \n"
+                    + "order by nombreRazonSocial;");
             String fila[] = new String[5];
             while (rs.next()) {
                 fila[0] = rs.getString("id");

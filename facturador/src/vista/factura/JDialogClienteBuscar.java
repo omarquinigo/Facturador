@@ -17,6 +17,7 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
         ConfigurarVentana();
         CargarClientes();
     }
+    
     void ConfigurarVentana() {
         //posiciono el frame al centro de la pantalla
         this.setLocationRelativeTo(null);
@@ -59,6 +60,7 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
         dispose();
         //activamos objetos cabecera factura
         jpfn.jcbxMoneda.setEnabled(true);
+        jpfn.jcbxMedioPago.setEnabled(true);
         jpfn.jbtnBuscar.setEnabled(false);
         // activamos objetos de detalle factura
         jpfn.jtxtCantidad.setEnabled(true);
@@ -66,6 +68,8 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
         jpfn.jtxtPrecioUnitario.setEnabled(true);
         jpfn.jtxtDescripcion.setEnabled(true);
         jpfn.jbtnAgregar.setEnabled(true);
+        //limpio cliente
+        id = null;
     }
 
     @SuppressWarnings("unchecked")
@@ -195,7 +199,6 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
             SeleccionarCliente();
         }
     }//GEN-LAST:event_jtblClientesMouseClicked
-
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
