@@ -1,4 +1,4 @@
-# Facturador
+# Facturador Omashi 1.0.4
 Exporta archivos planos para el Facturador SUNAT SFS 1.3.4.4
 
 Facturador Omashi v1.0.4
