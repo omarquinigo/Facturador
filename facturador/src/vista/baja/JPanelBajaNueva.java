@@ -1,5 +1,6 @@
 package vista.baja;
 
+import controlador.ArchivosPlanos;
 import controlador.Metodos;
 import controlador.Rutas;
 import java.io.BufferedWriter;
@@ -8,7 +9,10 @@ import java.io.FileWriter;
 import java.sql.ResultSet;
 import javax.swing.table.DefaultTableModel;
 import modelo.Baja;
+import modelo.Boleta;
 import modelo.Factura;
+import modelo.NotaCredito;
+import modelo.NotaDebito;
 import vista.JPanelComprobantes;
 
 public class JPanelBajaNueva extends javax.swing.JPanel {
@@ -21,14 +25,14 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
     public JPanelBajaNueva() {
         initComponents();
         jtxtFecha.setText(Metodos.CargarFechaActual());
-        CargarIdBaja();
+        cargarIdBaja();
     }
     
-    void CargarIdBaja(){
-        String fechaActual = Metodos.FechaActualFormatoSUNATSinGuiones();
+    private void cargarIdBaja(){
+        String fechaActual = Metodos.FechaActualFormatoSUNATSinGuiones(jtxtFecha.getText());
         String nombreBaja = "RA-" + fechaActual + "-";
         try {
-            rs = Factura.Consulta("select *\n"
+            rs = Baja.consulta("select * \n"
                     + "from baja \n"
                     + "where id LIKE '%" + fechaActual + "%';");
             if (rs.last() == true) {
@@ -54,11 +58,10 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
         }
     }
     
-    private void CargarFacturas(String fecha) {
+    private void cargarFacturas(String fecha) {
         try {
             dtmComprobantes = (DefaultTableModel) jtblComprobantes.getModel();
-            dtmComprobantes.setRowCount(0);
-            rs = Factura.Consulta("select *\n"
+            rs = Factura.consulta("select * \n"
                     + "from factura\n"
                     + "inner join cliente\n"
                     + "on cliente.id = factura.idCliente\n"
@@ -68,7 +71,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             while (rs.next()) {
                 fila[0] = "Factura";
                 fila[1] = rs.getString("factura.id");
-                fila[2] = rs.getString("cliente.nombreRazonSocial");
+                fila[2] = rs.getString("nombreRazonSocial");
                 dtmComprobantes.addRow(fila);
             }
             rs.close();
@@ -78,12 +81,105 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
         }
     }
     
-    void LimpiarTablas(){
+    private void cargarBoletas(String fecha) {
+        try {
+            dtmComprobantes = (DefaultTableModel) jtblComprobantes.getModel();
+            rs = Boleta.consulta("select * \n"
+                    + "from boleta \n"
+                    + "inner join cliente\n"
+                    + "on cliente.id = boleta.idCliente\n"
+                    + "where boleta.fecha = '" + fecha + "' "
+                    + "order by boleta.id desc;");
+            String fila[] = new String[3];
+            while (rs.next()) {
+                fila[0] = "Boleta";
+                fila[1] = rs.getString("boleta.id");
+                fila[2] = rs.getString("nombreRazonSocial");
+                dtmComprobantes.addRow(fila);
+            }
+            rs.close();
+        } catch (Exception e) {
+            System.out.println("Error cargando boletas: \n" + e);
+            Metodos.MensajeError("Error cargando boletas: \n" + e);
+        }
+    }
+    
+    private void cargarNotasCredito(String fecha) {
+        try {
+            dtmComprobantes = (DefaultTableModel) jtblComprobantes.getModel();
+            rs = NotaCredito.consulta("select * \n"
+                    + "from notacredito \n"
+                    + "left join factura \n"
+                    + "on factura.id = notacredito.idComprobante \n"
+                    + "left join boleta \n"
+                    + "on boleta.id = notacredito.idComprobante \n"
+                    + "left join cliente as cf \n"
+                    + "on cf.id = factura.idCliente \n"
+                    + "left join cliente as cb \n"
+                    + "on cb.id = boleta.idCliente \n"
+                    + "where notacredito.fecha = '" + fecha + "' "
+                    + "order by STR_TO_DATE(notacredito.fecha, '%d/%m/%Y') desc, \n"
+                    + "notacredito.id desc;");
+            String fila[] = new String[3];
+            while (rs.next()) {
+                fila[0] = "Nota de crédito";
+                fila[1] = rs.getString("notacredito.id");
+                String aux = rs.getString("factura.id");
+                if(aux!= null){ // cliente factura
+                    fila[2] = rs.getString("cf.nombreRazonSocial");
+                } else { // cliente boleta
+                    fila[2] = rs.getString("cb.nombreRazonSocial");
+                }  
+                dtmComprobantes.addRow(fila);
+            }
+            rs.close();
+        } catch (Exception e) {
+            System.out.println("Error cargando notas de crédito: \n" + e);
+            Metodos.MensajeError("Error cargando crédito: \n" + e);
+        }
+    }
+    
+    private void cargarNotasDebito(String fecha) {
+        try {
+            dtmComprobantes = (DefaultTableModel) jtblComprobantes.getModel();
+            rs = NotaDebito.consulta("select * \n"
+                    + "from notadebito \n"
+                    + "left join factura \n"
+                    + "on factura.id = notadebito.idComprobante \n"
+                    + "left join boleta \n"
+                    + "on boleta.id = notadebito.idComprobante \n"
+                    + "left join cliente as cf \n"
+                    + "on cf.id = factura.idCliente \n"
+                    + "left join cliente as cb \n"
+                    + "on cb.id = boleta.idCliente \n"
+                    + "where notadebito.fecha = '" + fecha + "' "
+                    + "order by STR_TO_DATE(notadebito.fecha, '%d/%m/%Y') desc, \n"
+                    + "notadebito.id desc;");
+            String fila[] = new String[3];
+            while (rs.next()) {
+                fila[0] = "Nota de débito";
+                fila[1] = rs.getString("notadebito.id");
+                String aux = rs.getString("factura.id");
+                if(aux!= null){ // cliente factura
+                    fila[2] = rs.getString("cf.nombreRazonSocial");
+                } else { // cliente boleta
+                    fila[2] = rs.getString("cb.nombreRazonSocial");
+                }  
+                dtmComprobantes.addRow(fila);
+            }
+            rs.close();
+        } catch (Exception e) {
+            System.out.println("Error cargando notas de débito: \n" + e);
+            Metodos.MensajeError("Error cargando débito: \n" + e);
+        }
+    }
+    
+    private void limpiarTablas(){
         Metodos.LimpiarTabla(jtblComprobantes);
         Metodos.LimpiarTabla(jtblBajas);
     }
     
-    void Agregar(){
+    private void agregar(){
         //capturo los datos de la fila seleccionada
         int fila = jtblComprobantes.getSelectedRow();
         String tipoComprobante = jtblComprobantes.getValueAt(fila, 0).toString();
@@ -103,62 +199,26 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
         jbtnCrearArchivosPlanos.setEnabled(true);
     }
     
-    void CrearArchivoPlano() {
-        //se crea archivo con el nombre establecido
-        File ap = new File(Rutas.getRutaAPBaja(id));
-        //para almacenar datos
-        BufferedWriter bufferedWriter;
-        if (ap.exists()) {
-            Metodos.MensajeError("Error generando archivo\n"
-                    + "plano '" + id + ".CBA':\n"
-                    + "El archivo ya existe");
-        } else {
-            try {
-                bufferedWriter = new BufferedWriter(new FileWriter(ap));
-                //recorremos la tabla detealle para capturar los datos
-                for (int i = 0; i < jtblBajas.getRowCount(); i++) {
-                    //guardamos los campos en variables
-                    String fechaEmision = Metodos.FechaFormatoSUNAT(Metodos.CapturarDateChooser(jdcFecha));
-                    String fechaActual = Metodos.FechaActualFormatoSUNAT();
-                    String tipo_comprobante = jtblBajas.getValueAt(i, 0).toString();
-                    String tipo_comp;
-                    if (tipo_comprobante.equals("Factura")) {
-                        tipo_comp = "01";
-                    } else {
-                        tipo_comp = "error";
-                    }
-                    String numero_documento = jtblBajas.getValueAt(i, 1).toString();
-                    String motivo = jtblBajas.getValueAt(i, 2).toString();
-                    bufferedWriter.write(
-                            fechaEmision + "|"
-                            + fechaActual + "|"
-                            + tipo_comp + "|"
-                            + numero_documento + "|"
-                            + motivo + "\n");
-                }
-                bufferedWriter.close();
-                Metodos.MensajeInformacion("Archivos planos generados.");
-            } catch (Exception e) {
-                Metodos.MensajeError("Error creando archivo plano " + id + ".CBA:\n" + e);
-                System.out.println(e);
-            }
-        }
+    private void crearArchivoPlano() {
+        ArchivosPlanos.apBaja(id);
+        Metodos.MensajeInformacion("Archivos planos generados.");
+        bloquearCampos();
+        jbtnImprimir.setEnabled(true);
     }
     
-    void RegistrarBaja() {
+    private void registrarBaja() {
         //capturamos los datos a enviar desde el frame
         String fecha = jtxtFecha.getText();
+        String fechaComprobante = Metodos.getFechaJDC(jdcFecha);
         try {
-            Baja.RegistrarBaja(id, fecha);
+            Baja.registrarBaja(id, fecha, fechaComprobante);
         } catch (Exception e) {
-            System.out.println("Error registrando baja a la base de datos: \n" + e);
-            Metodos.MensajeError("Error registrando baja a la base de datos: \n" + e);
+            System.out.println("Error registrando baja: \n" + e);
+            Metodos.MensajeError("Error registrando baja: \n" + e);
         }
     }
     
-    void RegistrarBajaDet() {
-        //capturamos los datos a enviar desde el frame
-        String fecha = jtxtFecha.getText();
+    private void registrarBajaDet() {
         try {
             int numero = 1;//contador para IdFacturaDet
             for (int i = 0; i < jtblBajas.getRowCount(); i++) {
@@ -166,12 +226,19 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
                 String tipoComprobante = jtblBajas.getValueAt(i, 0).toString();
                 String idComprobante = jtblBajas.getValueAt(i, 1).toString();
                 String motivo = jtblBajas.getValueAt(i, 2).toString();
-                Baja.RegistrarBajaDet(idBaja, id, tipoComprobante, idComprobante, motivo);
+                Baja.registrarBajaDet(idBaja, id, tipoComprobante, idComprobante, motivo);
             }
         } catch (Exception e) {
-            System.out.println("Error registrando detalle de baja\n a la base de datos: \n" + e);
-            Metodos.MensajeError("Error registrando detalle de baja\n a la base de datos: \n" + e);
+            System.out.println("Error registrando detalle de baja: \n" + e);
+            Metodos.MensajeError("Error registrando detalle de baja: \n" + e);
         }
+    }
+    
+    private void bloquearCampos(){
+        jcbxMotivo.setEnabled(false);
+        jbtnAgregar.setEnabled(false);
+        jbtnCrearArchivosPlanos.setEnabled(false);
+        jbtnImprimir.setEnabled(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -195,8 +262,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         jtblBajas = new javax.swing.JTable();
         jbtnCrearArchivosPlanos = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        jbtnImprimir = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 192, 192));
 
@@ -236,13 +302,13 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
         if (jtblComprobantes.getColumnModel().getColumnCount() > 0) {
             jtblComprobantes.getColumnModel().getColumn(0).setPreferredWidth(50);
             jtblComprobantes.getColumnModel().getColumn(1).setPreferredWidth(50);
-            jtblComprobantes.getColumnModel().getColumn(2).setPreferredWidth(250);
+            jtblComprobantes.getColumnModel().getColumn(2).setPreferredWidth(350);
         }
 
         jdcFecha.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
 
         jcbxMotivo.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jcbxMotivo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "---SELECCIONE---", "ERROR EN DESCRIPCION", "ERROR DE MONEDA", "ERROR DE FECHA", "ERROR EN RUC O RAZÓN SOCIAL", "ERROR EN DIRECCION", "ERROR DE MAL CALCULO DE IGV" }));
+        jcbxMotivo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Seleccione-", "Error en descripción", "Error en moneda", "Error en fecha", "Error en RUC o razón social", "Error en dirección", "Error en cálculo de importes", "Otros" }));
 
         jLabel3.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel3.setText("Motivo:");
@@ -272,18 +338,20 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                             .addComponent(jLabel4)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jdcFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jcbxMotivo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jbtnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jbtnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jbtnAgregar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel3)
+                            .addGap(144, 144, 144))
+                        .addComponent(jbtnBuscar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jcbxMotivo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -291,20 +359,20 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jdcFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jdcFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbtnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(15, 15, 15)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jcbxMotivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbtnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addGap(0, 84, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -333,7 +401,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
         if (jtblBajas.getColumnModel().getColumnCount() > 0) {
             jtblBajas.getColumnModel().getColumn(0).setPreferredWidth(50);
             jtblBajas.getColumnModel().getColumn(1).setPreferredWidth(50);
-            jtblBajas.getColumnModel().getColumn(2).setPreferredWidth(250);
+            jtblBajas.getColumnModel().getColumn(2).setPreferredWidth(350);
         }
 
         jbtnCrearArchivosPlanos.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -344,11 +412,14 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             }
         });
 
-        jLabel5.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jLabel5.setText("Requisitos: La factura fue emitida");
-
-        jLabel6.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jLabel6.setText("máximo en 7 dias pasados");
+        jbtnImprimir.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jbtnImprimir.setText("Imprimir");
+        jbtnImprimir.setEnabled(false);
+        jbtnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnImprimirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -356,29 +427,24 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jbtnCrearArchivosPlanos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                    .addComponent(jbtnCrearArchivosPlanos, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbtnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(1, 1, 1)
-                        .addComponent(jLabel6)
-                        .addGap(31, 31, 31)
-                        .addComponent(jbtnCrearArchivosPlanos, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jbtnCrearArchivosPlanos, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jbtnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 40, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -419,22 +485,25 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbtnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnBuscarActionPerformed
-        LimpiarTablas();
+        limpiarTablas();
         try {
             String fecha = Metodos.CapturarDateChooser(jdcFecha);
-            CargarFacturas(fecha);
+            cargarFacturas(fecha);
+            cargarBoletas(fecha);
+            cargarNotasCredito(fecha);
+            cargarNotasDebito(fecha);
         } catch (Exception e) {
-            System.out.println("Error buscando fecha: \n" + e);
-            Metodos.MensajeError("Error buscando fecha: \n" + e);
+            System.out.println("Fecha incorrecta: \n" + e);
+            Metodos.MensajeError("Fecha incorrecta: \n" + e);
         }
     }//GEN-LAST:event_jbtnBuscarActionPerformed
 
     private void jbtnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnAgregarActionPerformed
         if (jcbxMotivo.getSelectedIndex() == 0) {
-            Metodos.MensajeAlerta("Seleccione el motivo de baja del comprobante.");
+            Metodos.MensajeAlerta("Seleccione el motivo de baja.");
         } else {
             if (jtblComprobantes.getSelectedRow() >= 0) {
-                Agregar();
+                agregar();
             } else {//si no existe ninguna fila seleccionada
                 Metodos.MensajeAlerta("Debe seleccionar una comprobante.");
             }
@@ -443,16 +512,22 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
 
     private void jbtnCrearArchivosPlanosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnCrearArchivosPlanosActionPerformed
         try {
-            CrearArchivoPlano();
-            RegistrarBaja();
-            RegistrarBajaDet();
-            JPanelComprobantes jpc = new JPanelComprobantes();
-            Metodos.CambiarPanel(jpc);
+            registrarBaja();
+            registrarBajaDet();
+            crearArchivoPlano();
         } catch (Exception e) {
             Metodos.MensajeError("Error: "+ e);
         }
-
     }//GEN-LAST:event_jbtnCrearArchivosPlanosActionPerformed
+
+    private void jbtnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnImprimirActionPerformed
+        try {
+            Baja.crearPDF(id);
+        } catch (Exception e) {
+            System.out.println("Error.\n" + e);
+            Metodos.MensajeAlerta("Error." + e);
+        }
+    }//GEN-LAST:event_jbtnImprimirActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -460,8 +535,6 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -469,6 +542,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
     private javax.swing.JButton jbtnAgregar;
     private javax.swing.JButton jbtnBuscar;
     private javax.swing.JButton jbtnCrearArchivosPlanos;
+    private javax.swing.JButton jbtnImprimir;
     private javax.swing.JComboBox<String> jcbxMotivo;
     private com.toedter.calendar.JDateChooser jdcFecha;
     private javax.swing.JTable jtblBajas;

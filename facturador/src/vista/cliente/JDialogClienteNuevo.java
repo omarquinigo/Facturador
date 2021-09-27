@@ -2,67 +2,25 @@ package vista.cliente;
 
 import controlador.Metodos;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import modelo.Cliente;
 
 public class JDialogClienteNuevo extends javax.swing.JDialog {
     
-    static ResultSet rs;
+    
 
     public JDialogClienteNuevo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        ConfigurarVentana();
+        configurarVentana();
     }
     
-    void ConfigurarVentana() {
+    private void configurarVentana() {
         //posiciono el frame al centro de la pantalla
         this.setLocationRelativeTo(null);
         //desactiva el cambio de tamaño de la ventana
         this.setResizable(false);
         //asigno titulo a mostrar del frame
         this.setTitle("Nuevo cliente");
-    }
-    
-    String generarIdCliente() {
-        String Id = "";
-        try {
-            rs = Cliente.Consulta("select id \n"
-                    + "from cliente \n"
-                    + "ORDER BY CAST(id as SIGNED );");
-            if(rs.last() == true){
-                String Codigo = rs.getString("id");
-                //String Codigo = ("50");
-                int numero_cliente = Integer.parseInt(Codigo) + 1;//convierto a entero para sumar +1
-                String CodigoCliente = String.valueOf(numero_cliente);
-                Id = CodigoCliente;
-            }   else {
-                Id = "1";
-            }
-            rs.close();
-        } catch (Exception e) {
-            System.out.println("Error generando id de cliente: \n" + e);
-            Metodos.MensajeError("Error generando id de cliente: \n" + e);
-        }
-        return Id;
-    }
-    
-    boolean ExisteCliente(String numeroDocumento){
-        boolean existe = false;
-        try {
-            rs = Cliente.Consulta("select * \n"
-                    + "from cliente \n"
-                    + "where numeroDocumento = '"+numeroDocumento+"' ;");
-            String fila[] = new String[4];
-            while (rs.next()) {
-                existe = true;
-            }
-            rs.close();
-        } catch (Exception e) {
-        }
-        return existe;
     }
 
     @SuppressWarnings("unchecked")
@@ -109,7 +67,7 @@ public class JDialogClienteNuevo extends javax.swing.JDialog {
         jLabel2.setText("Tipo Doc.:");
 
         jcbxTipoDocumento.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jcbxTipoDocumento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "---SELECCIONE---", "DNI", "RUC", "CARNE EXT", "PASS" }));
+        jcbxTipoDocumento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "---SELECCIONE---", "DNI", "RUC", "Carnet de extranjería", "Pasaporte" }));
 
         jLabel3.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel3.setText("Número Doc.:");
@@ -132,36 +90,30 @@ public class JDialogClienteNuevo extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(jbtnRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jbtnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4)
                             .addComponent(jLabel5))
-                        .addGap(43, 43, 43)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jcbxTipoDocumento, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(0, 280, Short.MAX_VALUE))
-                            .addComponent(jtxtNombreRazonSocial)
-                            .addComponent(jtxtDireccion)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jbtnRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbtnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jcbxTipoDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jtxtDireccion, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+                            .addComponent(jtxtNombreRazonSocial))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(8, 8, 8)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -201,32 +153,29 @@ public class JDialogClienteNuevo extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbtnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnRegistrarActionPerformed
-        String id = generarIdCliente();
+        String id = Cliente.generarIdCliente();
         String tipoDocumento = jcbxTipoDocumento.getSelectedItem().toString();
         String numeroDocumento = jtxtNumeroDocumento.getText();
         String nombreRazonSocial = jtxtNombreRazonSocial.getText();
         String direccion = jtxtDireccion.getText();
         
-        if (id.equals("")
-                || tipoDocumento.equals("---SELECCIONE---")
-                || numeroDocumento.equals("")
-                || nombreRazonSocial.equalsIgnoreCase("")
-                || direccion.equalsIgnoreCase("")) {
-            Metodos.MensajeAlerta("Verificar datos.");
-        } else {
-            if (ExisteCliente(numeroDocumento) == true) {
-                Metodos.MensajeAlerta("El cliente con el número de documento " + numeroDocumento + " \n"
-                        + "ya se encuentra registrado en el sistema.");
-
+        String mensaje = Metodos.validarCliente(tipoDocumento, numeroDocumento,
+                nombreRazonSocial, direccion);
+        
+        if (mensaje.equals("")) {
+            if (Metodos.existeCliente(id, numeroDocumento) == true) {
+                Metodos.MensajeAlerta("El cliente con el número de documento " + numeroDocumento + " ya existe en el sistema.");
             } else {
                 try {
                     Cliente.Registrar(id, tipoDocumento, numeroDocumento,
                             nombreRazonSocial, direccion);
                     dispose();
-                } catch (SQLException ex) {
-                    Logger.getLogger(JDialogClienteNuevo.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception e) {
+                    Metodos.MensajeError("Error registrando cliente:" + e);
                 }
             }
+        } else {
+            Metodos.MensajeAlerta(mensaje);
         }
     }//GEN-LAST:event_jbtnRegistrarActionPerformed
 

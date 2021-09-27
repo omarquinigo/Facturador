@@ -14,11 +14,11 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
     public JDialogClienteBuscar(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        ConfigurarVentana();
-        CargarClientes();
+        configurarVentana();
+        cargarClientes();
     }
     
-    void ConfigurarVentana() {
+    private void configurarVentana() {
         //posiciono el frame al centro de la pantalla
         this.setLocationRelativeTo(null);
         //desactiva el cambio de tamaño de la ventana
@@ -27,7 +27,7 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
         this.setTitle("Buscar cliente");
     }
     
-    private void CargarClientes() {
+    private void cargarClientes() {
         try {
             dtmClientes = (DefaultTableModel) jtblClientes.getModel();
             dtmClientes.setRowCount(0);
@@ -49,27 +49,25 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
         }
     }
     
-    public void SeleccionarCliente() {
+    public void seleccionarCliente() {
         int fila = jtblClientes.getSelectedRow();//captura la fila seleccionada
         dtmClientes = (DefaultTableModel) jtblClientes.getModel();
         //capturo número documento para buscarlo más adelante
         id = jtblClientes.getValueAt(fila, 0).toString();
         //actualizamos el panel Cliente con para que salgan los datos del cliente
-        JPanelFacturaNueva jpfn = new JPanelFacturaNueva();
-        Metodos.CambiarPanel(jpfn);
+        //JPanelFacturaNueva jpfn = new JPanelFacturaNueva();
+        //Metodos.CambiarPanel(jpfn);
         dispose();
         //activamos objetos cabecera factura
-        jpfn.jcbxMoneda.setEnabled(true);
-        jpfn.jcbxMedioPago.setEnabled(true);
-        jpfn.jbtnBuscar.setEnabled(false);
+        //jpfn.jbtnBuscar.setEnabled(false);
         // activamos objetos de detalle factura
-        jpfn.jtxtCantidad.setEnabled(true);
-        jpfn.jcbxTipoUnidad.setEnabled(true);
-        jpfn.jtxtPrecioUnitario.setEnabled(true);
-        jpfn.jtxtDescripcion.setEnabled(true);
-        jpfn.jbtnAgregar.setEnabled(true);
+        //jpfn.jtxtCantidad.setEnabled(true);
+        //jpfn.jcbxTipoUnidad.setEnabled(true);
+        //jpfn.jtxtPrecioUnitario.setEnabled(true);
+        //jpfn.jtxtDescripcion.setEnabled(true);
+        //jpfn.jbtnAgregar.setEnabled(true);
         //limpio cliente
-        id = null;
+        //id = null;
     }
 
     @SuppressWarnings("unchecked")
@@ -82,6 +80,7 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
         jbtnSeleccionar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jtxtBuscar = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -112,10 +111,12 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
         });
         jScrollPane1.setViewportView(jtblClientes);
         if (jtblClientes.getColumnModel().getColumnCount() > 0) {
-            jtblClientes.getColumnModel().getColumn(0).setPreferredWidth(100);
-            jtblClientes.getColumnModel().getColumn(1).setPreferredWidth(200);
-            jtblClientes.getColumnModel().getColumn(2).setPreferredWidth(200);
-            jtblClientes.getColumnModel().getColumn(3).setPreferredWidth(500);
+            jtblClientes.getColumnModel().getColumn(0).setMinWidth(0);
+            jtblClientes.getColumnModel().getColumn(0).setPreferredWidth(0);
+            jtblClientes.getColumnModel().getColumn(0).setMaxWidth(0);
+            jtblClientes.getColumnModel().getColumn(1).setPreferredWidth(100);
+            jtblClientes.getColumnModel().getColumn(2).setPreferredWidth(150);
+            jtblClientes.getColumnModel().getColumn(3).setPreferredWidth(600);
         }
 
         jbtnSeleccionar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -137,19 +138,26 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
         jLabel1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jLabel1.setText("Buscar cliente:");
 
+        jtxtBuscar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jtxtBuscarKeyTyped(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(0, 495, Short.MAX_VALUE))
-                            .addComponent(jScrollPane1)))
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtxtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jbtnSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -161,7 +169,9 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jtxtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -190,15 +200,19 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void jbtnSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnSeleccionarActionPerformed
-        SeleccionarCliente();
+        seleccionarCliente();
     }//GEN-LAST:event_jbtnSeleccionarActionPerformed
 
     private void jtblClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtblClientesMouseClicked
         //si la fila en la tabla ha sido presionado 2 veces
         if (evt.getClickCount() == 2) {    
-            SeleccionarCliente();
+            seleccionarCliente();
         }
     }//GEN-LAST:event_jtblClientesMouseClicked
+
+    private void jtxtBuscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxtBuscarKeyTyped
+        Metodos.filtrarCliente(jtxtBuscar, 2, 3, dtmClientes, jtblClientes);
+    }//GEN-LAST:event_jtxtBuscarKeyTyped
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -249,5 +263,6 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton jbtnSeleccionar;
     private javax.swing.JTable jtblClientes;
+    private javax.swing.JTextField jtxtBuscar;
     // End of variables declaration//GEN-END:variables
 }

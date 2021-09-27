@@ -102,7 +102,7 @@ public class JFrameSplashScreen extends javax.swing.JFrame implements Runnable{
     public void run() {
         while (tiempo != null){
             try {
-                Thread.sleep(3000);//tiempo del SplasScreen 3000
+                Thread.sleep(1500);//tiempo del SplasScreen 3000
                 tiempo = null;
                 this.dispose();
                 new JFrameLogin().setVisible(true);//lanza el login para entrar al sistema

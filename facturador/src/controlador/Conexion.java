@@ -3,29 +3,46 @@ package controlador;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Conexion {
 
     static Connection conexion = null;
+    static Connection conexionTest = null;
 
-    public static Connection getConexion() throws InstantiationException, IllegalAccessException {
+    public static Connection getConexion() {
+        String host = Datos.getHost();
+        String puerto = Datos.getPuerto();
+        String baseDatos = Datos.getBaseDatos();
+        String usuario = Datos.getUsuario();
+        String contrasena = Datos.getContrasena();
 
-        String Url = "jdbc:mysql://localhost:3306/facturador";
+        String Url = "jdbc:mysql://" + host + ":" + puerto + "/" + baseDatos;
 
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        try {
-            conexion = DriverManager.getConnection(Url,"root","");
-        } catch (SQLException e) {
+            conexion = DriverManager.getConnection(Url, usuario, contrasena);
+        } catch (Exception e) {
+            System.out.println("Error al conectar a BD: \n" + e);
             Metodos.MensajeError("Error al conectar a BD: \n" + e);
         }
+
         return conexion;
+    }
+
+    public static void getConexionTest(String host, String puerto,
+            String baseDatos, String usuario, String contrasena)
+            throws InstantiationException, IllegalAccessException, SQLException {
+
+        String Url = "jdbc:mysql://" + host + ":" + puerto + "/" + baseDatos;
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            conexionTest = DriverManager.getConnection(Url, usuario, contrasena);
+            Metodos.MensajeInformacion("Conexión exitosa.");
+        } catch (Exception e) {
+            System.out.println("Error al conectar a BD: \n" + e);
+            Metodos.MensajeError("Error al conectar a BD: \n" + e);
+        }
     }
 
 }

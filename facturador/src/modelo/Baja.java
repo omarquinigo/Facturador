@@ -1,6 +1,7 @@
 package modelo;
 
 import controlador.Conexion;
+import controlador.Datos;
 import controlador.Metodos;
 import controlador.Rutas;
 import java.awt.Desktop;
@@ -16,8 +17,10 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 
 public class Baja {
+    
+    static ResultSet rs;
 
-    public static ResultSet Consulta(String query) {
+    public static ResultSet consulta(String query) {
         try {
             Connection con = Conexion.getConexion();
             Statement stmt;
@@ -30,13 +33,14 @@ public class Baja {
         return null;
     }
 
-    public static void RegistrarBaja(String id, String fecha) throws SQLException {
+    public static void registrarBaja(String id, String fecha,
+            String fechaComprobante) throws SQLException {
         try {
             Connection con = Conexion.getConexion();
             Statement stmt = con.createStatement();
             String sql = "insert into baja \n"
-                    + "(id,fecha) \n"
-                    + "values ('" + id + "','" + fecha + "');";
+                    + "(id,fecha,fechaComprobante) \n"
+                    + "values ('" + id + "','" + fechaComprobante + "','" + fecha + "');";
             stmt.execute(sql);
             con.close();
         } catch (Exception e) {
@@ -44,7 +48,7 @@ public class Baja {
         }
     }
     
-    public static void RegistrarBajaDet(String id, String idBaja,
+    public static void registrarBajaDet(String id, String idBaja,
             String tipoComprobante, String idComprobante, String motivo)
             throws SQLException {
         try {
@@ -61,17 +65,88 @@ public class Baja {
         }
     }
     
-    public static void CrearPDF(String id) {
+    public static void crearPDF(String id){
+        String papel = Datos.getImpresion();
+     
+        if (papel.equals("A4")) {
+            crearPdfA4(id);
+        } else { // Ticket 80 mm
+            crearPdfTicket80mm(id);
+        }
+
+    }
+    
+    public static void crearPdfA4(String id) {
         // enviar a reporte
         String numeroComprobante = id;
         String fecha = "";
-        // otros
-        String ruc = Rutas.getRUC();
-        String razonSocial = Rutas.getRazonSocial();
-        String direccionLegal = Rutas.getDireccion();
+        // ========= Datos de nuestra empresa =============
+        String ruc = Datos.getRUC();
+        String razonSocial = Datos.getRazonSocial();
+        String direccionLegal = Datos.getDireccion();
+        String telefono = Datos.getTelefono();
+        String correo = Datos.getCorreo();
+        String web = Datos.getWeb();
+        // ================================================
+        String datosCabecera = direccionLegal + "\n"
+                + "Teléfono: " + telefono + "\n"
+                + "Correo: " + correo + "\n"
+                + "Web: " + web + "\n";
         String logo = "\\src\\img\\logo.png";
         try {
-            ResultSet rs = Baja.Consulta("select * from baja \n"
+            rs = Baja.consulta("select * from baja \n"
+                    + "where id = '" + id + "' ;");
+            while (rs.next()) {
+                fecha = rs.getString("fecha");
+                System.out.println("La fecha es: " + fecha);
+            }
+            rs.close();
+        } catch (Exception e) {
+        }
+        //parámetros de envio al reporte
+        Map parametro = new HashMap();
+        parametro.put("numeroComprobante", numeroComprobante);
+        parametro.put("fecha", fecha);
+        parametro.put("ruc", ruc);
+        parametro.put("razonSocial", razonSocial);
+        parametro.put("datosCabecera", datosCabecera);
+        parametro.put("logo", logo);
+        // parametro para buscar el detalle
+        parametro.put("id", id);
+        try {
+            Connection con = Conexion.getConexion();
+            JasperPrint jp = JasperFillManager.fillReport("src\\repo\\Baja-A4.jasper", parametro, con);
+            JasperExportManager.exportReportToPdfFile(jp, Rutas.getRutaBajaPDF(id));
+            con.close();
+            //abriendo el pdf
+            try {
+                File objetofile = new File(Rutas.getRutaBajaPDF(id));
+                Desktop.getDesktop().open(objetofile);
+            } catch (Exception e) {
+                System.out.println("Error abriendo baja: " + id + "\n" + e);
+                Metodos.MensajeError("Error abriendo baja: " + id + "\n" + e);
+            }
+        } catch (Exception e) {
+            System.out.println("Error creando PDF: " + id + "\n" + e);
+            Metodos.MensajeError("Error creando PDF: " + id + "\n" + e);
+        }
+    }
+    
+    public static void crearPdfTicket80mm(String id) {
+        // enviar a reporte
+        String numeroComprobante = id;
+        String fecha = "";
+        // ========= Datos de nuestra empresa =============
+        String ruc = Datos.getRUC();
+        String razonSocial = Datos.getRazonSocial();
+        String direccionLegal = Datos.getDireccion();
+        String telefono = Datos.getTelefono();
+        String correo = Datos.getCorreo();
+        String web = Datos.getWeb();
+        // ================================================
+        String logo = "\\src\\img\\logo.png";
+        try {
+            rs = Baja.consulta("select * from baja \n"
                     + "where id = '" + id + "' ;");
             while (rs.next()) {
                 fecha = rs.getString("fecha");
@@ -86,14 +161,16 @@ public class Baja {
         parametro.put("ruc", ruc);
         parametro.put("razonSocial", razonSocial);
         parametro.put("direccionLegal", direccionLegal);
+        parametro.put("telefono", telefono);
+        parametro.put("correo", correo);
+        parametro.put("web", web);
         parametro.put("logo", logo);
         // parametro para buscar el detalle
         parametro.put("id", id);
         try {
             Connection con = Conexion.getConexion();
-            JasperPrint jp = JasperFillManager.fillReport("src\\repo\\Baja.jasper", parametro, con);
+            JasperPrint jp = JasperFillManager.fillReport("src\\repo\\Baja-Ticket80mm.jasper", parametro, con);
             JasperExportManager.exportReportToPdfFile(jp, Rutas.getRutaBajaPDF(id));
-            Metodos.MensajeInformacion("PDF guardado.");
             con.close();
             //abriendo el pdf
             try {

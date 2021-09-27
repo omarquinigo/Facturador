@@ -1,5 +1,6 @@
 package controlador;
 
+import java.io.File;
 import java.sql.ResultSet;
 import modelo.Config;
 
@@ -7,55 +8,8 @@ public class Rutas {
     
     static ResultSet rs;
     
-    public static String getRUC(){
-        String ruc = null;
-        try {
-            rs = Config.Consulta("select ruc \n"
-                    + "from config \n"
-                    + "where id = '1';");
-            while (rs.next()) {
-                ruc = rs.getString("ruc");
-            }
-            rs.close();
-        } catch (Exception e) {
-            System.out.println("Error cargando ruc: \n" + e);
-            Metodos.MensajeError("Error cargando ruc: \n" + e);
-        }
-        return ruc;
-    }
-    
-    public static String getRazonSocial(){
-        String razonSocial = null;
-        try {
-            rs = Config.Consulta("select razonSocial \n"
-                    + "from config \n"
-                    + "where id = '1';");
-            while (rs.next()) {
-                razonSocial = rs.getString("razonSocial");
-            }
-            rs.close();
-        } catch (Exception e) {
-            System.out.println("Error cargando razon social: \n" + e);
-            Metodos.MensajeError("Error cargando razon social: \n" + e);
-        }
-        return razonSocial;
-    }
-    
-    public static String getDireccion(){
-        String direccion = null;
-        try {
-            rs = Config.Consulta("select direccion \n"
-                    + "from config \n"
-                    + "where id = '1';");
-            while (rs.next()) {
-                direccion = rs.getString("direccion");
-            }
-            rs.close();
-        } catch (Exception e) {
-            System.out.println("Error cargando direccion: \n" + e);
-            Metodos.MensajeError("Error cargando direccion: \n" + e);
-        }
-        return direccion;
+    public static String getRutaConexionBD(){
+        return "env.txt";
     }
     
     public static String getRutaSunat(){
@@ -77,13 +31,13 @@ public class Rutas {
     
     public static String getRutaAP(String tipoDocumento,String nombre, String ext){
         String ruta = getRutaSunat() + "\\sunat_archivos\\sfs\\DATA\\"
-                +getRUC()+"-"+tipoDocumento+"-" + nombre + "." + ext;
+                + Datos.getRUC()+"-"+tipoDocumento+"-" + nombre + "." + ext;
         return ruta;
     }
     
     public static String getRutaAPBaja(String nombre) {
         String ruta = getRutaSunat() + "\\sunat_archivos\\sfs\\DATA\\"
-                + getRUC() + "-" +nombre + ".CBA";
+                + Datos.getRUC() + "-" +nombre + ".CBA";
         return ruta;
     }
     
@@ -106,6 +60,8 @@ public class Rutas {
   
     public static String getRutaFacturaPDF(String id) {
         String ruta = getRutaPdf() + "\\Facturas\\" + id + ".pdf";
+        File directorio = new File(getRutaPdf() + "\\Facturas");
+        directorio.mkdirs();
         return ruta;
     }
     
@@ -131,7 +87,7 @@ public class Rutas {
     
     public static String getRutaHash(String tipoDocumento, String nombre) {
         String ruta = getRutaSunat() + "\\sunat_archivos\\sfs\\FIRMA\\"
-                + getRUC() + "-" + tipoDocumento + "-" + nombre + ".xml";
+                + Datos.getRUC() + "-" + tipoDocumento + "-" + nombre + ".xml";
         return ruta;
     }
     

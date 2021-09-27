@@ -15,11 +15,11 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
     public JDialogComprobanteBuscar(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        ConfigurarVentana();
-        CargarComprobantes();
+        configurarVentana();
+        cargarComprobantes();
     }
     
-    void ConfigurarVentana() {
+    private void configurarVentana() {
         //posiciono el frame al centro de la pantalla
         this.setLocationRelativeTo(null);
         //desactiva el cambio de tamaño de la ventana
@@ -28,12 +28,12 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
         this.setTitle("Buscar comprobante");
     }
     
-    void CargarComprobantes(){
-        CargarFacturas();
-        CargarBoletas();
+    private void cargarComprobantes(){
+        cargarFacturas();
+        cargarBoletas();
     }
     
-    private void CargarFacturas() {
+    private void cargarFacturas() {
         try {
             dtmFacturas = (DefaultTableModel) jtblFacturas.getModel();
             dtmFacturas.setRowCount(0);
@@ -58,7 +58,7 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
         }
     }
     
-    private void CargarBoletas() {
+    private void cargarBoletas() {
         try {
             dtmBoletas = (DefaultTableModel) jtblBoletas.getModel();
             dtmBoletas.setRowCount(0);
@@ -83,48 +83,20 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
         }
     }
     
-    public void SeleccionarFactura() {
+    public void seleccionarFactura() {
         int fila = jtblFacturas.getSelectedRow();//captura la fila seleccionada
         dtmFacturas = (DefaultTableModel) jtblFacturas.getModel();
         //capturo número documento para buscarlo más adelante
         id = jtblFacturas.getValueAt(fila, 0).toString();
-        //actualizamos el panel Cliente con para que salgan los datos del cliente
-        JPanelNotaCreditoNueva jpncn = new JPanelNotaCreditoNueva();
-        Metodos.CambiarPanel(jpncn);
         dispose();
-        //activamos objetos cabecera factura
-        jpncn.jcbxMotivo.setEnabled(true);
-        jpncn.jbtnBuscar.setEnabled(false);
-        // activamos objetos de detalle factura
-        jpncn.jtxtCantidad.setEnabled(true);
-        jpncn.jcbxTipoUnidad.setEnabled(true);
-        jpncn.jtxtPrecioUnitario.setEnabled(true);
-        jpncn.jtxtDescripcion.setEnabled(true);
-        jpncn.jbtnAgregar.setEnabled(true);
-        //limpio cliente
-        id = null;
     }
     
-    public void SeleccionarBoleta() {
+    public void seleccionarBoleta() {
         int fila = jtblBoletas.getSelectedRow();//captura la fila seleccionada
         dtmBoletas = (DefaultTableModel) jtblBoletas.getModel();
         //capturo número documento para buscarlo más adelante
         id = jtblBoletas.getValueAt(fila, 0).toString();
-        //actualizamos el panel Cliente con para que salgan los datos del cliente
-        JPanelNotaCreditoNueva jpncn = new JPanelNotaCreditoNueva();
-        Metodos.CambiarPanel(jpncn);
         dispose();
-        //activamos objetos cabecera factura
-        jpncn.jcbxMotivo.setEnabled(true);
-        jpncn.jbtnBuscar.setEnabled(false);
-        // activamos objetos de detalle factura
-        jpncn.jtxtCantidad.setEnabled(true);
-        jpncn.jcbxTipoUnidad.setEnabled(true);
-        jpncn.jtxtPrecioUnitario.setEnabled(true);
-        jpncn.jtxtDescripcion.setEnabled(true);
-        jpncn.jbtnAgregar.setEnabled(true);
-        //limpio cliente
-        id = null;
     }
 
     @SuppressWarnings("unchecked")
@@ -132,25 +104,25 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jtblFacturas = new javax.swing.JTable();
         jbtnFacturaCancelar = new javax.swing.JButton();
         jbtnFacturaSeleccionar = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jtxtFacturaBuscar = new javax.swing.JTextField();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jtblBoletas = new javax.swing.JTable();
         jbtnBoletaCancelar = new javax.swing.JButton();
         jbtnBoletaSeleccionar = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jtxtBoletaBuscar = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(141, 170, 235));
-
-        jLabel1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        jLabel1.setText("Buscar comprobante:");
 
         jtblFacturas.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jtblFacturas.setModel(new javax.swing.table.DefaultTableModel(
@@ -200,6 +172,16 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
             }
         });
 
+        jLabel2.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jLabel2.setText("Buscar factura:");
+
+        jtxtFacturaBuscar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtFacturaBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jtxtFacturaBuscarKeyTyped(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -212,14 +194,23 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
                         .addComponent(jbtnFacturaSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbtnFacturaCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 665, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 665, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtxtFacturaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jtxtFacturaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbtnFacturaCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -277,6 +268,16 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
             }
         });
 
+        jLabel3.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jLabel3.setText("Buscar boleta:");
+
+        jtxtBoletaBuscar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtBoletaBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jtxtBoletaBuscarKeyTyped(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -289,14 +290,23 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
                         .addComponent(jbtnBoletaSeleccionar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbtnBoletaCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 665, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 665, Short.MAX_VALUE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtxtBoletaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jtxtBoletaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbtnBoletaCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -312,19 +322,13 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jTabbedPane1))
+                .addComponent(jTabbedPane1)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1)
                 .addContainerGap())
         );
@@ -344,7 +348,7 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbtnBoletaSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnBoletaSeleccionarActionPerformed
-        SeleccionarBoleta();
+        seleccionarBoleta();
     }//GEN-LAST:event_jbtnBoletaSeleccionarActionPerformed
 
     private void jbtnBoletaCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnBoletaCancelarActionPerformed
@@ -354,12 +358,12 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
     private void jtblBoletasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtblBoletasMouseClicked
         //si la fila en la tabla ha sido presionado 2 veces
         if (evt.getClickCount() == 2) {
-            SeleccionarBoleta();
+            seleccionarBoleta();
         }
     }//GEN-LAST:event_jtblBoletasMouseClicked
 
     private void jbtnFacturaSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFacturaSeleccionarActionPerformed
-        SeleccionarFactura();
+        seleccionarFactura();
     }//GEN-LAST:event_jbtnFacturaSeleccionarActionPerformed
 
     private void jbtnFacturaCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFacturaCancelarActionPerformed
@@ -369,9 +373,17 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
     private void jtblFacturasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtblFacturasMouseClicked
         //si la fila en la tabla ha sido presionado 2 veces
         if (evt.getClickCount() == 2) {
-            SeleccionarFactura();
+            seleccionarFactura();
         }
     }//GEN-LAST:event_jtblFacturasMouseClicked
+
+    private void jtxtFacturaBuscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxtFacturaBuscarKeyTyped
+        Metodos.filtrarFactura(jtxtFacturaBuscar, 0, 1, dtmFacturas, jtblFacturas);
+    }//GEN-LAST:event_jtxtFacturaBuscarKeyTyped
+
+    private void jtxtBoletaBuscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxtBoletaBuscarKeyTyped
+        Metodos.filtrarBoleta(jtxtBoletaBuscar, 0, 1, dtmBoletas, jtblBoletas);
+    }//GEN-LAST:event_jtxtBoletaBuscarKeyTyped
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -420,7 +432,8 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
@@ -433,5 +446,7 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
     private javax.swing.JButton jbtnFacturaSeleccionar;
     private javax.swing.JTable jtblBoletas;
     private javax.swing.JTable jtblFacturas;
+    private javax.swing.JTextField jtxtBoletaBuscar;
+    private javax.swing.JTextField jtxtFacturaBuscar;
     // End of variables declaration//GEN-END:variables
 }

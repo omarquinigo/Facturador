@@ -7,11 +7,14 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Window;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,11 +25,19 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import modelo.Cliente;
 import static vista.JFramePrincipal.jpnlPrincipal;
 
 public class Metodos {
+    
+    static TableRowSorter trs;
+    static ResultSet rs;
     
     public static void ConfigurarVentana(JFrame jFrame,String tituloVentana){
         //posiciono el frame al centro de la pantalla
@@ -90,63 +101,6 @@ public class Metodos {
         for (int i = 0; i < filas; i++) {
             table.setValueAt(i + 1, i, 0);
         }
-    }
-    
-    //puede llegar a tener hasta 4 decimales
-    public static String FormatoDecimalOperar(Double numero){
-        DecimalFormat df = new DecimalFormat("#0.00##");
-        String num = df.format(numero);
-        return num;
-    }
-    
-    // 2 decimales
-    public static String FormatoDecimalMostrar(String numero){
-        double n = Double.parseDouble(numero);
-        DecimalFormat df = new DecimalFormat("#0.00");
-        String num = df.format(n);
-        return num;
-    }
-    
-    public static String ConvertirNumTexto(String numero, String moneda) {
-        String moneda_texto;
-        ConvertirNumeroTexto NumLetra = new ConvertirNumeroTexto();
-        if (moneda.equalsIgnoreCase("PEN")) {
-            moneda_texto = "SOLES.";
-        } else if (moneda.equalsIgnoreCase("USD")) {
-            moneda_texto = "DÓLARES AMERICANOS.";
-        } else {
-            moneda_texto = "";
-        }
-        String letritas = (NumLetra.Convertir(numero, band()));
-        return letritas + moneda_texto;
-    }
-    
-    //para el numero en letras
-    private static boolean band() {
-        if (Math.random() > .5) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-    // YYYY-MM-DD según SUNAT
-    public static String FechaActualFormatoSUNAT() {
-        //se crea objeto de tipo Date
-        Date fecha = new Date();
-        //envio al text field al mismo tiempo se cambia el formato
-        String fecha_sunat = (new SimpleDateFormat("yyyy-MM-dd").format(fecha));
-        return fecha_sunat;
-    }
-    
-    public static String FechaFormatoSUNAT(String fecha){
-        //se crea objeto de tipo Date
-        String dia = fecha.substring(0,2);
-        String mes = fecha.substring(3,5);
-        String anio = fecha.substring(6,10);
-        //envio al text field al mismo tiempo se cambia el formato
-        String fecha_sunat = anio+"-"+mes+"-"+dia;
-        return fecha_sunat;
     }
     
     public static String ObtenerHora() {
@@ -249,11 +203,7 @@ public class Metodos {
         return fecha_final;
     }
     
-    // YYYYMMDD
-    public static String FechaActualFormatoSUNATSinGuiones(){
-        String fecha = FechaActualFormatoSUNAT();
-        return fecha.replace("-", "");
-    }
+
     
     // obtener código de medio de Pago Catálogo 59
     public static String ObtenerCodigoMedioPago(String mp){
@@ -334,4 +284,354 @@ public class Metodos {
         return codigo_tipo_documento;
     }
     
+    // ========= Métodos ==========
+    
+    public static void FiltrarProducto(JTextField jtxt, int columna1,int columna2, DefaultTableModel tableModel, JTable table){
+        jtxt.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                trs.setRowFilter(RowFilter.regexFilter("(?i)"+jtxt.getText(), columna1, columna2));
+            }
+        });
+        trs = new TableRowSorter<TableModel>(tableModel);
+        table.setRowSorter(trs);
+    }
+    
+    public static void filtrarServicio(JTextField jtxt, int columna1,int columna2, DefaultTableModel tableModel, JTable table){
+        jtxt.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                trs.setRowFilter(RowFilter.regexFilter("(?i)"+jtxt.getText(), columna1, columna2));
+            }
+        });
+        trs = new TableRowSorter<TableModel>(tableModel);
+        table.setRowSorter(trs);
+    }
+    
+    public static void filtrarCliente(JTextField jtxt, int columna1,int columna2, DefaultTableModel tableModel, JTable table){
+        jtxt.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                trs.setRowFilter(RowFilter.regexFilter("(?i)"+jtxt.getText(), columna1, columna2));
+            }
+        });
+        trs = new TableRowSorter<TableModel>(tableModel);
+        table.setRowSorter(trs);
+    }
+    
+    public static void filtrarFactura(JTextField jtxt, int columna1,int columna2, DefaultTableModel tableModel, JTable table){
+        jtxt.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                trs.setRowFilter(RowFilter.regexFilter("(?i)"+jtxt.getText(), columna1, columna2));
+            }
+        });
+        trs = new TableRowSorter<TableModel>(tableModel);
+        table.setRowSorter(trs);
+    }
+    
+    public static void filtrarBoleta(JTextField jtxt, int columna1,int columna2, DefaultTableModel tableModel, JTable table){
+        jtxt.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                trs.setRowFilter(RowFilter.regexFilter("(?i)"+jtxt.getText(), columna1, columna2));
+            }
+        });
+        trs = new TableRowSorter<TableModel>(tableModel);
+        table.setRowSorter(trs);
+    }
+    
+    public static void filtrarNotaCredito(JTextField jtxt,
+            int columna1,int columna2,
+            int columna3,int columna4,
+            DefaultTableModel tableModel, JTable table){
+        jtxt.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                trs.setRowFilter(RowFilter.regexFilter("(?i)"+jtxt.getText(),
+                        columna1, columna2,columna3, columna4));
+            }
+        });
+        trs = new TableRowSorter<TableModel>(tableModel);
+        table.setRowSorter(trs);
+    }
+    
+    public static void filtrarNotaDebito(JTextField jtxt,
+            int columna1,int columna2,
+            int columna3,int columna4,
+            DefaultTableModel tableModel, JTable table){
+        jtxt.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                trs.setRowFilter(RowFilter.regexFilter("(?i)"+jtxt.getText(),
+                        columna1, columna2,columna3, columna4));
+            }
+        });
+        trs = new TableRowSorter<TableModel>(tableModel);
+        table.setRowSorter(trs);
+    }
+    
+    public static void ValidarDecimalTXT(java.awt.event.KeyEvent evt, JTextField campo) {////****mejorar metodo
+        char car = evt.getKeyChar();
+        if ((car < '0' || car > '9') && (car < '.' || car > '.')) {
+            evt.consume();
+        }
+        char c = evt.getKeyChar();
+        if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)
+                && (c != '.')) {
+            evt.consume();
+        }
+        if (c == '.' && campo.getText().contains(".")) {
+            evt.consume();
+        }
+    }
+    
+    public static void ValidarDecimalCBX(java.awt.event.KeyEvent evt, JComboBox combo) {////****mejorar metodo
+        char car = evt.getKeyChar();
+        if ((car < '0' || car > '9') && (car < '.' || car > '.')) {
+            evt.consume();
+        }
+        char c = evt.getKeyChar();
+        if (((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)
+                && (c != '.')) {
+            evt.consume();
+        }
+        if (c == '.' && combo.getSelectedItem().toString().contains(".")) {
+            evt.consume();
+        }
+    }
+    
+    public static String validarCliente(String tipoDocumento,
+            String numeroDocumento, String nombreRazonSocial, String direccion){
+        String mensaje = "";
+        
+        if (nombreRazonSocial.equals("")) {
+            mensaje = "Escriba el nombre o razón social.";
+        }
+        
+        if (tipoDocumento.equals("---SELECCIONE---")) {
+            mensaje = "Seleccione el tipo de documento.";
+        } else {
+            if (numeroDocumento.equals("")) {
+                mensaje = "Escriba el número de documento.";
+            } else if (numeroDocumento != ("")) {
+                if (tipoDocumento.equals("DNI")) {
+                    if (numeroDocumento.length() != 8) {
+                        mensaje = "El " + tipoDocumento + " debe tener 8 dígitos.";
+                    }
+                } else if (tipoDocumento.equals("RUC")) {
+                    if (numeroDocumento.length() != 11) {
+                        mensaje = "El " + tipoDocumento + " debe tener 11 dígitos.";
+                    }
+                } else if (tipoDocumento.equals("Carnet de extranjería")) {
+                    if (numeroDocumento.length() != 12) {
+                        mensaje = "El " + tipoDocumento + " debe tener 12 dígitos.";
+                    }
+                } else if (tipoDocumento.equals("Pasaporte")) {
+                    if (numeroDocumento.length() != 12) {
+                        mensaje = "El " + tipoDocumento + " debe tener 12 dígitos.";
+                    }
+                }
+            }
+        }
+        
+        return mensaje;
+    }
+    
+    public static boolean existeCliente(String id, String numeroDocumento) {
+        boolean existe = false;
+        try {
+            rs = Cliente.Consulta("select * \n"
+                    + "from cliente \n"
+                    + "where numeroDocumento = '" + numeroDocumento + "' "
+                    + "and id <> '" + id + "'  ;");
+            while (rs.next()) {
+                existe = true;
+            }
+            rs.close();
+        } catch (Exception e) {
+        }
+        return existe;
+    }
+    
+    public static String validarFechaVencimiento(JDateChooser Fecha){
+        String mensaje = "";
+        if (((JTextField) Fecha.getDateEditor().getUiComponent()).getText().isEmpty()) {
+            //mensaje = "No hay datos: (-)";
+        } else {
+            Date d = Fecha.getDate();
+            if (d == null) {
+                mensaje = "Fecha de vencimiento errónea, corrija o deje blanco.";
+            }
+        }
+        return mensaje;
+        
+    }
+    
+    public static String getFechaJDC(JDateChooser Fecha) {
+        String fecha = "";
+        try {
+            Date d = Fecha.getDate();
+
+            if (d == null) {
+                fecha = "-";
+            } else {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");                
+                fecha = sdf.format(d);
+            }
+        } catch (Exception e) {}
+
+        return fecha;
+    }
+    
+    public static boolean validarExisteAPFactura(String id){
+        boolean existe;
+        
+        String tipoComprobante[] = Catalogos.tipoDocumento("", "Factura");
+        String rutaData = Rutas.getRutaSunat() + "\\sunat_archivos\\sfs\\DATA\\" + Datos.getRUC() + "-" + tipoComprobante[0] + "-" + id;
+        
+        File apCab = new File(rutaData + ".CAB");
+        File apDet = new File(rutaData + ".DET");
+        File apTri = new File(rutaData + ".TRI");
+        File apLey = new File(rutaData + ".LEY");
+
+        //File archivo = null;
+        if (apCab.exists() || apDet.exists() ||
+                apTri.exists() || apLey.exists()) {
+            existe = true;
+        } else {
+            existe = false;
+        }
+        return existe;
+    }
+    
+    public static boolean validarExisteAPBoleta(String id){
+        boolean existe;
+        
+        String tipoComprobante[] = Catalogos.tipoDocumento("", "Boleta");
+        String rutaData = Rutas.getRutaSunat() + "\\sunat_archivos\\sfs\\DATA\\" + Datos.getRUC() + "-" + tipoComprobante[0] + "-" + id;
+        
+        File apCab = new File(rutaData + ".CAB");
+        File apDet = new File(rutaData + ".DET");
+        File apTri = new File(rutaData + ".TRI");
+        File apLey = new File(rutaData + ".LEY");
+
+        //File archivo = null;
+        if (apCab.exists() || apDet.exists() ||
+                apTri.exists() || apLey.exists()) {
+            existe = true;
+        } else {
+            existe = false;
+        }
+        return existe;
+    }
+    
+    public static boolean validarExisteAPNotaCredito(String id){
+        boolean existe;
+        
+        String tipoComprobante[] = Catalogos.tipoDocumento("", "Nota de crédito");
+        String rutaData = Rutas.getRutaSunat() + "\\sunat_archivos\\sfs\\DATA\\" + Datos.getRUC() + "-" + tipoComprobante[0] + "-" + id;
+        
+        File apCab = new File(rutaData + ".CAB");
+        File apDet = new File(rutaData + ".DET");
+        File apTri = new File(rutaData + ".TRI");
+        File apLey = new File(rutaData + ".LEY");
+
+        //File archivo = null;
+        if (apCab.exists() || apDet.exists() ||
+                apTri.exists() || apLey.exists()) {
+            existe = true;
+        } else {
+            existe = false;
+        }
+        return existe;
+    }
+    
+    public static boolean validarExisteAPNotaDebito(String id){
+        boolean existe;
+        
+        String tipoComprobante[] = Catalogos.tipoDocumento("", "Nota de débito");
+        String rutaData = Rutas.getRutaSunat() + "\\sunat_archivos\\sfs\\DATA\\" + Datos.getRUC() + "-" + tipoComprobante[0] + "-" + id;
+        
+        File apCab = new File(rutaData + ".CAB");
+        File apDet = new File(rutaData + ".DET");
+        File apTri = new File(rutaData + ".TRI");
+        File apLey = new File(rutaData + ".LEY");
+
+        //File archivo = null;
+        if (apCab.exists() || apDet.exists() ||
+                apTri.exists() || apLey.exists()) {
+            existe = true;
+        } else {
+            existe = false;
+        }
+        return existe;
+    }
+    
+    // YYYY-MM-DD según SUNAT
+    public static String fechaFormatoSUNAT(String fecha) {
+        String fechaSunat;
+        if(fecha.equals("-")){
+            fechaSunat = fecha;
+        } else {
+            try {
+                Date d = new SimpleDateFormat("dd/MM/yyyy").parse(fecha);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                fechaSunat = sdf.format(d);
+            } catch (Exception e) {
+                System.out.println("Error: " + e);
+                fechaSunat = "";
+            }
+        }
+        return fechaSunat;
+    }
+    
+    // máximo 10 decimales SUNAT
+    public static double formatoDecimalOperar(String numero){
+        numero = numero.replace(",", "");
+        double num = Double.parseDouble(numero);
+        //DecimalFormat df = new DecimalFormat("#0.00########");
+        //numero = df.format(num);
+        return num;
+    }
+    
+    // 2 decimales
+    public static String formatoDecimalMostrar(double numero){
+        DecimalFormat df = new DecimalFormat("#0.00");
+        String num = df.format(numero);
+        return num;
+    }
+    
+    public static String convertirNumTexto(String numero, String moneda) {
+        String moneda_texto;
+        ConvertirNumeroTexto NumLetra = new ConvertirNumeroTexto();
+        if (moneda.equalsIgnoreCase("PEN")) {
+            moneda_texto = "SOLES.";
+        } else if (moneda.equalsIgnoreCase("USD")) {
+            moneda_texto = "DÓLARES AMERICANOS.";
+        } else {
+            moneda_texto = "";
+        }
+        String letritas = (NumLetra.Convertir(numero, band()));
+        return letritas + moneda_texto;
+    }
+    
+    //para el numero en letras
+    private static boolean band() {
+        if (Math.random() > .5) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    // YYYYMMDD
+    public static String FechaActualFormatoSUNATSinGuiones(String f){
+        String fecha = fechaFormatoSUNAT(f);
+        return fecha.replace("-", "");
+    }
+    
+
+    
+
 }

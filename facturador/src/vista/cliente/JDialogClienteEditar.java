@@ -12,11 +12,11 @@ public class JDialogClienteEditar extends javax.swing.JDialog {
     public JDialogClienteEditar(java.awt.Frame parent, boolean modal, String id) {
         super(parent, modal);
         initComponents();
-        ConfigurarVentana();
-        CargarCliente(id);
+        configurarVentana();
+        cargarCliente(id);
     }
     
-    void ConfigurarVentana() {
+    private void configurarVentana() {
         //posiciono el frame al centro de la pantalla
         this.setLocationRelativeTo(null);
         //desactiva el cambio de tamaño de la ventana
@@ -25,7 +25,7 @@ public class JDialogClienteEditar extends javax.swing.JDialog {
         this.setTitle("Editar cliente");
     }
     
-    void CargarCliente(String idCliente) {
+    private void cargarCliente(String idCliente) {
         id = idCliente;
         try {
             rs = Cliente.Consulta("select * \n"
@@ -68,7 +68,6 @@ public class JDialogClienteEditar extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(141, 170, 235));
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jbtnCancelar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jbtnCancelar.setText("Cancelar");
@@ -77,7 +76,6 @@ public class JDialogClienteEditar extends javax.swing.JDialog {
                 jbtnCancelarActionPerformed(evt);
             }
         });
-        jPanel1.add(jbtnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 140, 100, 40));
 
         jbtnActualizar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jbtnActualizar.setText("Actualizar");
@@ -86,52 +84,101 @@ public class JDialogClienteEditar extends javax.swing.JDialog {
                 jbtnActualizarActionPerformed(evt);
             }
         });
-        jPanel1.add(jbtnActualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(384, 140, 100, 40));
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jLabel1.setText("Editar cliente");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 11, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel2.setText("Tipo Doc.:");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 35, -1, -1));
 
         jcbxTipoDocumento.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jcbxTipoDocumento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "---SELECCIONE---", "DNI", "RUC", "CARNE EXT", "PASS" }));
-        jPanel1.add(jcbxTipoDocumento, new org.netbeans.lib.awtextra.AbsoluteConstraints(182, 32, -1, -1));
+        jcbxTipoDocumento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "---SELECCIONE---", "DNI", "RUC", "Carnet de extranjería", "Pasaporte" }));
 
         jLabel3.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel3.setText("Número Doc.:");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 62, -1, -1));
 
         jtxtNumeroDocumento.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jPanel1.add(jtxtNumeroDocumento, new org.netbeans.lib.awtextra.AbsoluteConstraints(182, 59, 128, -1));
 
         jLabel4.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel4.setText("Nombre / Razón Social:");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 89, -1, -1));
 
         jtxtNombreRazonSocial.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jPanel1.add(jtxtNombreRazonSocial, new org.netbeans.lib.awtextra.AbsoluteConstraints(182, 86, 408, -1));
 
         jLabel5.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel5.setText("Dirección:");
-        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 113, -1, -1));
 
         jtxtDireccion.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jtxtDireccion.setMaximumSize(null);
         jtxtDireccion.setMinimumSize(null);
-        jPanel1.add(jtxtDireccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(182, 113, 408, -1));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3))
+                        .addGap(71, 71, 71)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jcbxTipoDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(jbtnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(6, 6, 6)
+                            .addComponent(jbtnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel4)
+                                .addComponent(jLabel5))
+                            .addGap(18, 18, 18)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jtxtNombreRazonSocial, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+                                .addComponent(jtxtDireccion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jcbxTipoDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jtxtNombreRazonSocial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jtxtDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jbtnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbtnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -142,20 +189,24 @@ public class JDialogClienteEditar extends javax.swing.JDialog {
         String numeroDocumento = jtxtNumeroDocumento.getText();
         String nombreRazonSocial = jtxtNombreRazonSocial.getText();
         String direccion = jtxtDireccion.getText();
-
-        if (tipoDocumento.equalsIgnoreCase("---SELECCIONE---")
-                || numeroDocumento.equals("")
-                || nombreRazonSocial.equals("")
-                || direccion.equals("")) {
-            Metodos.MensajeAlerta("Verifique datos.");
-        } else {
-            try {
-                Cliente.Actualizar(id, tipoDocumento, numeroDocumento,
-                        nombreRazonSocial, direccion);
-                dispose();
-            } catch (Exception e) {
-                
+        
+        String mensaje = Metodos.validarCliente(tipoDocumento, numeroDocumento,
+                nombreRazonSocial, direccion);
+        
+        if (mensaje.equals("")) {
+            if (Metodos.existeCliente(id, numeroDocumento) == true) {
+                Metodos.MensajeAlerta("El cliente con el número de documento " + numeroDocumento + " ya existe en el sistema.");
+            } else {
+                try {
+                    Cliente.Actualizar(id, tipoDocumento, numeroDocumento,
+                            nombreRazonSocial, direccion);
+                    dispose();
+                } catch (Exception e) {
+                    Metodos.MensajeError("Error actualizando cliente:" + e);
+                }
             }
+        } else {
+            Metodos.MensajeAlerta(mensaje);
         }
     }//GEN-LAST:event_jbtnActualizarActionPerformed
 

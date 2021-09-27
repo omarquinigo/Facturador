@@ -20,28 +20,24 @@ public class JPanelComprobantes extends javax.swing.JPanel {
     ResultSet rs;
     DefaultTableModel dtmFacturas;
     DefaultTableModel dtmBoletas;
-    DefaultTableModel dtmNotasCreditoFactura;
-    DefaultTableModel dtmNotasCreditoBoleta;
-    DefaultTableModel dtmNotasDebitoFactura;
-    DefaultTableModel dtmNotasDebitoBoleta;
+    DefaultTableModel dtmNotasCredito;
+    DefaultTableModel dtmNotasDebito;
     DefaultTableModel dtmBajas;
 
     public JPanelComprobantes() {
         initComponents();
-        CargarFacturas();
-        CargarBoletas();
-        CargarNotasCreditoFactura();
-        CargarNotasCreditoBoleta();
-        CargarNotasDebitoFactura();
-        CargarNotasDebitoBoleta();
+        cargarFacturas();
+        cargarBoletas();
+        cargarNotasCredito();
+        cargarNotasDebito();
         CargarBajas();
     }
     
-    private void CargarFacturas() {
+    private void cargarFacturas() {
         try {
             dtmFacturas = (DefaultTableModel) jtblFactura.getModel();
             dtmFacturas.setRowCount(0);
-            rs = Factura.Consulta("select *\n"
+            rs = Factura.consulta("select *\n"
                     + "from factura\n"
                     + "inner join cliente\n"
                     + "on cliente.id = factura.idCliente\n"
@@ -63,11 +59,11 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         }
     }
     
-    private void CargarBoletas() {
+    private void cargarBoletas() {
         try {
             dtmBoletas = (DefaultTableModel) jtblBoleta.getModel();
             dtmBoletas.setRowCount(0);
-            rs = Factura.Consulta("select *\n"
+            rs = Factura.consulta("select *\n"
                     + "from boleta\n"
                     + "inner join cliente\n"
                     + "on cliente.id = boleta.idCliente\n"
@@ -89,115 +85,91 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         }
     }
     
-    private void CargarNotasCreditoFactura() {
+    private void cargarNotasCredito() {
         try {
-            dtmNotasCreditoFactura = (DefaultTableModel) jtblNotaCreditoFactura.getModel();
-            dtmNotasCreditoFactura.setRowCount(0);
-            rs = NotaCredito.Consulta("select * \n"
+            dtmNotasCredito = (DefaultTableModel) jtblNotaCredito.getModel();
+            dtmNotasCredito.setRowCount(0);
+            rs = NotaCredito.consulta("select * \n"
                     + "from notacredito \n"
-                    + "inner join factura \n"
+                    
+                    + "left join factura \n"
                     + "on factura.id = notacredito.idComprobante \n"
-                    + "inner join cliente \n"
-                    + "on cliente.id = factura.idCliente \n"
-                    + "where notacredito.id LIKE '%FC%' \n"
-                    + "order by notacredito.id desc;");
-            String fila[] = new String[5];
-            while (rs.next()) {
-                fila[0] = rs.getString("notacredito.id");
-                fila[1] = rs.getString("cliente.nombreRazonSocial");
-                fila[2] = rs.getString("notacredito.fecha");
-                fila[3] = rs.getString("notacredito.idComprobante");
-                fila[4] = rs.getString("notacredito.motivo");
-                dtmNotasCreditoFactura.addRow(fila);
-            }
-            rs.close();
-        } catch (Exception e) {
-            System.out.println("Error cargando notas de crédito de facturas: \n" + e);
-            Metodos.MensajeError("Error cargando notas de crédito de facturas: \n" + e);
-        }
-    }
-    
-    private void CargarNotasCreditoBoleta() {
-        try {
-            dtmNotasCreditoBoleta = (DefaultTableModel) jtblNotaCreditoBoleta.getModel();
-            dtmNotasCreditoBoleta.setRowCount(0);
-            rs = NotaCredito.Consulta("select * \n"
-                    + "from notacredito \n"
-                    + "inner join boleta \n"
+                    
+                    + "left join boleta \n"
                     + "on boleta.id = notacredito.idComprobante \n"
-                    + "inner join cliente \n"
-                    + "on cliente.id = boleta.idCliente \n"
-                    + "where notacredito.id LIKE '%BC%' \n"
-                    + "order by notacredito.id desc;");
+                    
+                    + "left join cliente as cf \n"
+                    + "on cf.id = factura.idCliente \n"
+                    
+                    + "left join cliente as cb \n"
+                    + "on cb.id = boleta.idCliente \n"
+                    
+                    //+ "where notacredito.id LIKE '%FC%' \n"
+              + "order by STR_TO_DATE(notacredito.fecha, '%d/%m/%Y') desc, \n"
+                    + "notacredito.id desc;");
             String fila[] = new String[5];
             while (rs.next()) {
                 fila[0] = rs.getString("notacredito.id");
-                fila[1] = rs.getString("cliente.nombreRazonSocial");
+                String aux = rs.getString("factura.id");
+                if(aux!= null){ // cliente factura
+                    fila[1] = rs.getString("cf.nombreRazonSocial");
+                } else { // cliente boleta
+                    fila[1] = rs.getString("cb.nombreRazonSocial");
+                }                
+                
                 fila[2] = rs.getString("notacredito.fecha");
                 fila[3] = rs.getString("notacredito.idComprobante");
                 fila[4] = rs.getString("notacredito.motivo");
-                dtmNotasCreditoBoleta.addRow(fila);
+                dtmNotasCredito.addRow(fila);
             }
             rs.close();
         } catch (Exception e) {
-            System.out.println("Error cargando notas de crédito de boletas: \n" + e);
-            Metodos.MensajeError("Error cargando notas de crédito de boletas: \n" + e);
+            System.out.println("Error cargando notas de crédito: \n" + e);
+            Metodos.MensajeError("Error cargando notas de crédito: \n" + e);
         }
     }
     
-    private void CargarNotasDebitoFactura() {
+    private void cargarNotasDebito() {
         try {
-            dtmNotasDebitoFactura = (DefaultTableModel) jtblNotaDebitoFactura.getModel();
-            dtmNotasDebitoFactura.setRowCount(0);
-            rs = NotaDebito.Consulta("select * \n"
+            dtmNotasDebito = (DefaultTableModel) jtblNotaDebito.getModel();
+            dtmNotasDebito.setRowCount(0);
+            rs = NotaCredito.consulta("select * \n"
                     + "from notadebito \n"
-                    + "inner join factura \n"
+                    
+                    + "left join factura \n"
                     + "on factura.id = notadebito.idComprobante \n"
-                    + "inner join cliente \n"
-                    + "on cliente.id = factura.idCliente \n"
-                    + "where notadebito.id LIKE '%FD%' \n"
-                    + "order by notadebito.id desc;");
-            String fila[] = new String[5];
-            while (rs.next()) {
-                fila[0] = rs.getString("notadebito.id");
-                fila[1] = rs.getString("cliente.nombreRazonSocial");
-                fila[2] = rs.getString("notadebito.fecha");
-                fila[3] = rs.getString("notadebito.idComprobante");
-                fila[4] = rs.getString("notadebito.motivo");
-                dtmNotasDebitoFactura.addRow(fila);
-            }
-            rs.close();
-        } catch (Exception e) {
-            System.out.println("Error cargando notas de débito de facturas: \n" + e);
-            Metodos.MensajeError("Error cargando notas de débito de facturas: \n" + e);
-        }
-    }
-    
-    private void CargarNotasDebitoBoleta() {
-        try {
-            dtmNotasDebitoBoleta = (DefaultTableModel) jtblNotaDebitoBoleta.getModel();
-            dtmNotasDebitoBoleta.setRowCount(0);
-            rs = NotaDebito.Consulta("select * \n"
-                    + "from notadebito \n"
-                    + "inner join boleta \n"
+                    
+                    + "left join boleta \n"
                     + "on boleta.id = notadebito.idComprobante \n"
-                    + "inner join cliente \n"
-                    + "on cliente.id = boleta.idCliente \n"
-                    + "where notadebito.id LIKE '%BD%' \n"
-                    + "order by notadebito.id desc;");
+                    
+                    + "left join cliente as cf \n"
+                    + "on cf.id = factura.idCliente \n"
+                    
+                    + "left join cliente as cb \n"
+                    + "on cb.id = boleta.idCliente \n"
+                    
+                    //+ "where notacredito.id LIKE '%FC%' \n"
+              + "order by STR_TO_DATE(notadebito.fecha, '%d/%m/%Y') desc, \n"
+                    + "notadebito.id desc;");
             String fila[] = new String[5];
             while (rs.next()) {
                 fila[0] = rs.getString("notadebito.id");
-                fila[1] = rs.getString("cliente.nombreRazonSocial");
+                String aux = rs.getString("notadebito.id");
+                if(aux!= null){ // cliente factura
+                    fila[1] = rs.getString("cf.nombreRazonSocial");
+                } else { // cliente boleta
+                    fila[1] = rs.getString("cb.nombreRazonSocial");
+                }                
+                
                 fila[2] = rs.getString("notadebito.fecha");
                 fila[3] = rs.getString("notadebito.idComprobante");
                 fila[4] = rs.getString("notadebito.motivo");
-                dtmNotasDebitoBoleta.addRow(fila);
+                dtmNotasDebito.addRow(fila);
             }
             rs.close();
         } catch (Exception e) {
-            System.out.println("Error cargando notas de débito de boletas: \n" + e);
-            Metodos.MensajeError("Error cargando notas de débito de boletas: \n" + e);
+            System.out.println("Error cargando notas de débito: \n" + e);
+            Metodos.MensajeError("Error cargando notas de débito: \n" + e);
         }
     }
     
@@ -205,7 +177,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         try {
             dtmBajas = (DefaultTableModel) jtblBaja.getModel();
             dtmBajas.setRowCount(0);
-            rs = Factura.Consulta("select * \n"
+            rs = Factura.consulta("select * \n"
                     + "from baja\n"
                     + "inner join bajadet\n"
                     + "on bajadet.idBaja = baja.id\n"
@@ -236,40 +208,37 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         jtblFactura = new javax.swing.JTable();
         jbtnFacturaNueva = new javax.swing.JButton();
-        jbtnFacturaImprimir = new javax.swing.JButton();
-        jbtnFacturaCrearPDF = new javax.swing.JButton();
+        jbtnImprimir = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jtxtFacturaBuscar = new javax.swing.JTextField();
         jpnlBoletas = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jtblBoleta = new javax.swing.JTable();
         jbtnBoletaNueva = new javax.swing.JButton();
         jbtnBoletaImprimir = new javax.swing.JButton();
-        jbtnBoletaCrearPDF = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jtxtBoletaBuscar = new javax.swing.JTextField();
         jpnlNotasCredito = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jtblNotaCreditoFactura = new javax.swing.JTable();
+        jtblNotaCredito = new javax.swing.JTable();
         jbtnNotaCreditoNueva = new javax.swing.JButton();
-        jbtnNotaCreditoFacturaImprimir = new javax.swing.JButton();
-        jbtnNotaCreditoFacturaCrearPDF = new javax.swing.JButton();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        jtblNotaCreditoBoleta = new javax.swing.JTable();
-        jbtnNotaCreditoBoletaCrearPDF = new javax.swing.JButton();
-        jbtnNotaCreditoBoletaImprimir = new javax.swing.JButton();
+        jbtnNotaCreditoImprimir = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jtxtNCreditoBuscar = new javax.swing.JTextField();
         jpnlNotasDebito = new javax.swing.JPanel();
         jScrollPane7 = new javax.swing.JScrollPane();
-        jtblNotaDebitoFactura = new javax.swing.JTable();
+        jtblNotaDebito = new javax.swing.JTable();
         jbtnNotaDebitoNueva = new javax.swing.JButton();
-        jbtnNotaDebitoFacturaImprimir = new javax.swing.JButton();
-        jbtnNotaDebitoFacturaCrearPDF = new javax.swing.JButton();
-        jScrollPane8 = new javax.swing.JScrollPane();
-        jtblNotaDebitoBoleta = new javax.swing.JTable();
-        jbtnNotaDebitoBoletaCrearPDF = new javax.swing.JButton();
-        jbtnNotaDebitoBoletaImprimir = new javax.swing.JButton();
+        jbtnNotaDebitoImprimir = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jtxtNDebitoBuscar = new javax.swing.JTextField();
         jpnlBajas = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jtblBaja = new javax.swing.JTable();
         jbtnFacturaNueva1 = new javax.swing.JButton();
-        jbtnBajaCrearPDF = new javax.swing.JButton();
         jbtnBajaImprimir = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jtxtNDebitoBuscar1 = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(255, 192, 192));
 
@@ -280,7 +249,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
 
         jpnlFacturas.setBackground(new java.awt.Color(141, 170, 235));
 
-        jtblFactura.setFont(new java.awt.Font("Arial", 0, 11)); // NOI18N
+        jtblFactura.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jtblFactura.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -300,10 +269,10 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         jtblFactura.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jtblFactura);
         if (jtblFactura.getColumnModel().getColumnCount() > 0) {
-            jtblFactura.getColumnModel().getColumn(0).setPreferredWidth(100);
-            jtblFactura.getColumnModel().getColumn(1).setPreferredWidth(200);
+            jtblFactura.getColumnModel().getColumn(0).setPreferredWidth(80);
+            jtblFactura.getColumnModel().getColumn(1).setPreferredWidth(300);
             jtblFactura.getColumnModel().getColumn(2).setPreferredWidth(60);
-            jtblFactura.getColumnModel().getColumn(3).setPreferredWidth(100);
+            jtblFactura.getColumnModel().getColumn(3).setPreferredWidth(50);
             jtblFactura.getColumnModel().getColumn(4).setPreferredWidth(80);
             jtblFactura.getColumnModel().getColumn(5).setPreferredWidth(80);
         }
@@ -316,19 +285,21 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             }
         });
 
-        jbtnFacturaImprimir.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnFacturaImprimir.setText("Imprimir");
-        jbtnFacturaImprimir.addActionListener(new java.awt.event.ActionListener() {
+        jbtnImprimir.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jbtnImprimir.setText("Imprimir");
+        jbtnImprimir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnFacturaImprimirActionPerformed(evt);
+                jbtnImprimirActionPerformed(evt);
             }
         });
 
-        jbtnFacturaCrearPDF.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnFacturaCrearPDF.setText("Crear PDF");
-        jbtnFacturaCrearPDF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnFacturaCrearPDFActionPerformed(evt);
+        jLabel1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jLabel1.setText("Buscar:");
+
+        jtxtFacturaBuscar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtFacturaBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jtxtFacturaBuscarKeyTyped(evt);
             }
         });
 
@@ -338,26 +309,34 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             jpnlFacturasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpnlFacturasLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 729, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jpnlFacturasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jbtnFacturaImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-                    .addComponent(jbtnFacturaNueva, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jbtnFacturaCrearPDF, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jpnlFacturasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpnlFacturasLayout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jpnlFacturasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jbtnFacturaNueva, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jbtnImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)))
+                    .addGroup(jpnlFacturasLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtxtFacturaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jpnlFacturasLayout.setVerticalGroup(
             jpnlFacturasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpnlFacturasLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlFacturasLayout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jpnlFacturasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jtxtFacturaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpnlFacturasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
                     .addGroup(jpnlFacturasLayout.createSequentialGroup()
                         .addComponent(jbtnFacturaNueva, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbtnFacturaCrearPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbtnFacturaImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jbtnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -366,7 +345,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
 
         jpnlBoletas.setBackground(new java.awt.Color(141, 170, 235));
 
-        jtblBoleta.setFont(new java.awt.Font("Arial", 0, 11)); // NOI18N
+        jtblBoleta.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jtblBoleta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -386,10 +365,10 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         jtblBoleta.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(jtblBoleta);
         if (jtblBoleta.getColumnModel().getColumnCount() > 0) {
-            jtblBoleta.getColumnModel().getColumn(0).setPreferredWidth(100);
-            jtblBoleta.getColumnModel().getColumn(1).setPreferredWidth(200);
+            jtblBoleta.getColumnModel().getColumn(0).setPreferredWidth(80);
+            jtblBoleta.getColumnModel().getColumn(1).setPreferredWidth(300);
             jtblBoleta.getColumnModel().getColumn(2).setPreferredWidth(60);
-            jtblBoleta.getColumnModel().getColumn(3).setPreferredWidth(100);
+            jtblBoleta.getColumnModel().getColumn(3).setPreferredWidth(50);
             jtblBoleta.getColumnModel().getColumn(4).setPreferredWidth(80);
             jtblBoleta.getColumnModel().getColumn(5).setPreferredWidth(80);
         }
@@ -410,11 +389,13 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             }
         });
 
-        jbtnBoletaCrearPDF.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnBoletaCrearPDF.setText("Crear PDF");
-        jbtnBoletaCrearPDF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnBoletaCrearPDFActionPerformed(evt);
+        jLabel2.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jLabel2.setText("Buscar:");
+
+        jtxtBoletaBuscar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtBoletaBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jtxtBoletaBuscarKeyTyped(evt);
             }
         });
 
@@ -424,24 +405,32 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             jpnlBoletasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpnlBoletasLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 729, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jpnlBoletasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jbtnBoletaImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-                    .addComponent(jbtnBoletaNueva, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jbtnBoletaCrearPDF, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jpnlBoletasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpnlBoletasLayout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jpnlBoletasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jbtnBoletaImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                            .addComponent(jbtnBoletaNueva, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jpnlBoletasLayout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtxtBoletaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jpnlBoletasLayout.setVerticalGroup(
             jpnlBoletasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpnlBoletasLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlBoletasLayout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jpnlBoletasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jtxtBoletaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpnlBoletasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
                     .addGroup(jpnlBoletasLayout.createSequentialGroup()
                         .addComponent(jbtnBoletaNueva, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbtnBoletaCrearPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbtnBoletaImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -452,8 +441,8 @@ public class JPanelComprobantes extends javax.swing.JPanel {
 
         jpnlNotasCredito.setBackground(new java.awt.Color(141, 170, 235));
 
-        jtblNotaCreditoFactura.setFont(new java.awt.Font("Arial", 0, 11)); // NOI18N
-        jtblNotaCreditoFactura.setModel(new javax.swing.table.DefaultTableModel(
+        jtblNotaCredito.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtblNotaCredito.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -469,14 +458,14 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jtblNotaCreditoFactura.getTableHeader().setReorderingAllowed(false);
-        jScrollPane4.setViewportView(jtblNotaCreditoFactura);
-        if (jtblNotaCreditoFactura.getColumnModel().getColumnCount() > 0) {
-            jtblNotaCreditoFactura.getColumnModel().getColumn(0).setPreferredWidth(100);
-            jtblNotaCreditoFactura.getColumnModel().getColumn(1).setPreferredWidth(200);
-            jtblNotaCreditoFactura.getColumnModel().getColumn(2).setPreferredWidth(60);
-            jtblNotaCreditoFactura.getColumnModel().getColumn(3).setPreferredWidth(100);
-            jtblNotaCreditoFactura.getColumnModel().getColumn(4).setPreferredWidth(160);
+        jtblNotaCredito.getTableHeader().setReorderingAllowed(false);
+        jScrollPane4.setViewportView(jtblNotaCredito);
+        if (jtblNotaCredito.getColumnModel().getColumnCount() > 0) {
+            jtblNotaCredito.getColumnModel().getColumn(0).setPreferredWidth(80);
+            jtblNotaCredito.getColumnModel().getColumn(1).setPreferredWidth(300);
+            jtblNotaCredito.getColumnModel().getColumn(2).setPreferredWidth(60);
+            jtblNotaCredito.getColumnModel().getColumn(3).setPreferredWidth(80);
+            jtblNotaCredito.getColumnModel().getColumn(4).setPreferredWidth(160);
         }
 
         jbtnNotaCreditoNueva.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -487,62 +476,21 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             }
         });
 
-        jbtnNotaCreditoFacturaImprimir.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnNotaCreditoFacturaImprimir.setText("Imprimir");
-        jbtnNotaCreditoFacturaImprimir.addActionListener(new java.awt.event.ActionListener() {
+        jbtnNotaCreditoImprimir.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jbtnNotaCreditoImprimir.setText("Imprimir");
+        jbtnNotaCreditoImprimir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnNotaCreditoFacturaImprimirActionPerformed(evt);
+                jbtnNotaCreditoImprimirActionPerformed(evt);
             }
         });
 
-        jbtnNotaCreditoFacturaCrearPDF.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnNotaCreditoFacturaCrearPDF.setText("Crear PDF");
-        jbtnNotaCreditoFacturaCrearPDF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnNotaCreditoFacturaCrearPDFActionPerformed(evt);
-            }
-        });
+        jLabel3.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jLabel3.setText("Buscar:");
 
-        jtblNotaCreditoBoleta.setFont(new java.awt.Font("Arial", 0, 11)); // NOI18N
-        jtblNotaCreditoBoleta.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Nota Crédito", "Cliente", "Fecha", "Comprobante", "Motivo"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jtblNotaCreditoBoleta.getTableHeader().setReorderingAllowed(false);
-        jScrollPane6.setViewportView(jtblNotaCreditoBoleta);
-        if (jtblNotaCreditoBoleta.getColumnModel().getColumnCount() > 0) {
-            jtblNotaCreditoBoleta.getColumnModel().getColumn(0).setPreferredWidth(100);
-            jtblNotaCreditoBoleta.getColumnModel().getColumn(1).setPreferredWidth(200);
-            jtblNotaCreditoBoleta.getColumnModel().getColumn(2).setPreferredWidth(60);
-            jtblNotaCreditoBoleta.getColumnModel().getColumn(3).setPreferredWidth(100);
-            jtblNotaCreditoBoleta.getColumnModel().getColumn(4).setPreferredWidth(160);
-        }
-
-        jbtnNotaCreditoBoletaCrearPDF.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnNotaCreditoBoletaCrearPDF.setText("Crear PDF");
-        jbtnNotaCreditoBoletaCrearPDF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnNotaCreditoBoletaCrearPDFActionPerformed(evt);
-            }
-        });
-
-        jbtnNotaCreditoBoletaImprimir.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnNotaCreditoBoletaImprimir.setText("Imprimir");
-        jbtnNotaCreditoBoletaImprimir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnNotaCreditoBoletaImprimirActionPerformed(evt);
+        jtxtNCreditoBuscar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtNCreditoBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jtxtNCreditoBuscarKeyTyped(evt);
             }
         });
 
@@ -550,41 +498,37 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         jpnlNotasCredito.setLayout(jpnlNotasCreditoLayout);
         jpnlNotasCreditoLayout.setHorizontalGroup(
             jpnlNotasCreditoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlNotasCreditoLayout.createSequentialGroup()
+            .addGroup(jpnlNotasCreditoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jpnlNotasCreditoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane6)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 729, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpnlNotasCreditoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jpnlNotasCreditoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jbtnNotaCreditoFacturaImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-                        .addComponent(jbtnNotaCreditoNueva, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jbtnNotaCreditoFacturaCrearPDF, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jpnlNotasCreditoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jbtnNotaCreditoBoletaImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jbtnNotaCreditoBoletaCrearPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlNotasCreditoLayout.createSequentialGroup()
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jpnlNotasCreditoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jbtnNotaCreditoImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                            .addComponent(jbtnNotaCreditoNueva, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jpnlNotasCreditoLayout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtxtNCreditoBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jpnlNotasCreditoLayout.setVerticalGroup(
             jpnlNotasCreditoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpnlNotasCreditoLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlNotasCreditoLayout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jpnlNotasCreditoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jtxtNCreditoBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpnlNotasCreditoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpnlNotasCreditoLayout.createSequentialGroup()
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jpnlNotasCreditoLayout.createSequentialGroup()
-                        .addComponent(jbtnNotaCreditoFacturaCrearPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbtnNotaCreditoFacturaImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(82, 82, 82)
                         .addComponent(jbtnNotaCreditoNueva, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jbtnNotaCreditoBoletaCrearPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbtnNotaCreditoBoletaImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jbtnNotaCreditoImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -592,8 +536,8 @@ public class JPanelComprobantes extends javax.swing.JPanel {
 
         jpnlNotasDebito.setBackground(new java.awt.Color(141, 170, 235));
 
-        jtblNotaDebitoFactura.setFont(new java.awt.Font("Arial", 0, 11)); // NOI18N
-        jtblNotaDebitoFactura.setModel(new javax.swing.table.DefaultTableModel(
+        jtblNotaDebito.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtblNotaDebito.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -609,14 +553,14 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jtblNotaDebitoFactura.getTableHeader().setReorderingAllowed(false);
-        jScrollPane7.setViewportView(jtblNotaDebitoFactura);
-        if (jtblNotaDebitoFactura.getColumnModel().getColumnCount() > 0) {
-            jtblNotaDebitoFactura.getColumnModel().getColumn(0).setPreferredWidth(100);
-            jtblNotaDebitoFactura.getColumnModel().getColumn(1).setPreferredWidth(200);
-            jtblNotaDebitoFactura.getColumnModel().getColumn(2).setPreferredWidth(60);
-            jtblNotaDebitoFactura.getColumnModel().getColumn(3).setPreferredWidth(100);
-            jtblNotaDebitoFactura.getColumnModel().getColumn(4).setPreferredWidth(160);
+        jtblNotaDebito.getTableHeader().setReorderingAllowed(false);
+        jScrollPane7.setViewportView(jtblNotaDebito);
+        if (jtblNotaDebito.getColumnModel().getColumnCount() > 0) {
+            jtblNotaDebito.getColumnModel().getColumn(0).setPreferredWidth(80);
+            jtblNotaDebito.getColumnModel().getColumn(1).setPreferredWidth(300);
+            jtblNotaDebito.getColumnModel().getColumn(2).setPreferredWidth(60);
+            jtblNotaDebito.getColumnModel().getColumn(3).setPreferredWidth(80);
+            jtblNotaDebito.getColumnModel().getColumn(4).setPreferredWidth(160);
         }
 
         jbtnNotaDebitoNueva.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -627,62 +571,21 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             }
         });
 
-        jbtnNotaDebitoFacturaImprimir.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnNotaDebitoFacturaImprimir.setText("Imprimir");
-        jbtnNotaDebitoFacturaImprimir.addActionListener(new java.awt.event.ActionListener() {
+        jbtnNotaDebitoImprimir.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jbtnNotaDebitoImprimir.setText("Imprimir");
+        jbtnNotaDebitoImprimir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnNotaDebitoFacturaImprimirActionPerformed(evt);
+                jbtnNotaDebitoImprimirActionPerformed(evt);
             }
         });
 
-        jbtnNotaDebitoFacturaCrearPDF.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnNotaDebitoFacturaCrearPDF.setText("Crear PDF");
-        jbtnNotaDebitoFacturaCrearPDF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnNotaDebitoFacturaCrearPDFActionPerformed(evt);
-            }
-        });
+        jLabel4.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jLabel4.setText("Buscar:");
 
-        jtblNotaDebitoBoleta.setFont(new java.awt.Font("Arial", 0, 11)); // NOI18N
-        jtblNotaDebitoBoleta.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Nota Débito", "Cliente", "Fecha", "Comprobante", "Motivo"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jtblNotaDebitoBoleta.getTableHeader().setReorderingAllowed(false);
-        jScrollPane8.setViewportView(jtblNotaDebitoBoleta);
-        if (jtblNotaDebitoBoleta.getColumnModel().getColumnCount() > 0) {
-            jtblNotaDebitoBoleta.getColumnModel().getColumn(0).setPreferredWidth(100);
-            jtblNotaDebitoBoleta.getColumnModel().getColumn(1).setPreferredWidth(200);
-            jtblNotaDebitoBoleta.getColumnModel().getColumn(2).setPreferredWidth(60);
-            jtblNotaDebitoBoleta.getColumnModel().getColumn(3).setPreferredWidth(100);
-            jtblNotaDebitoBoleta.getColumnModel().getColumn(4).setPreferredWidth(160);
-        }
-
-        jbtnNotaDebitoBoletaCrearPDF.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnNotaDebitoBoletaCrearPDF.setText("Crear PDF");
-        jbtnNotaDebitoBoletaCrearPDF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnNotaDebitoBoletaCrearPDFActionPerformed(evt);
-            }
-        });
-
-        jbtnNotaDebitoBoletaImprimir.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnNotaDebitoBoletaImprimir.setText("Imprimir");
-        jbtnNotaDebitoBoletaImprimir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnNotaDebitoBoletaImprimirActionPerformed(evt);
+        jtxtNDebitoBuscar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtNDebitoBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jtxtNDebitoBuscarKeyTyped(evt);
             }
         });
 
@@ -690,41 +593,37 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         jpnlNotasDebito.setLayout(jpnlNotasDebitoLayout);
         jpnlNotasDebitoLayout.setHorizontalGroup(
             jpnlNotasDebitoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlNotasDebitoLayout.createSequentialGroup()
+            .addGroup(jpnlNotasDebitoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jpnlNotasDebitoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane8)
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 729, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpnlNotasDebitoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jpnlNotasDebitoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jbtnNotaDebitoFacturaImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-                        .addComponent(jbtnNotaDebitoNueva, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jbtnNotaDebitoFacturaCrearPDF, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jpnlNotasDebitoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jbtnNotaDebitoBoletaImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jbtnNotaDebitoBoletaCrearPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlNotasDebitoLayout.createSequentialGroup()
+                        .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jpnlNotasDebitoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jbtnNotaDebitoImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                            .addComponent(jbtnNotaDebitoNueva, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jpnlNotasDebitoLayout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtxtNDebitoBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jpnlNotasDebitoLayout.setVerticalGroup(
             jpnlNotasDebitoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpnlNotasDebitoLayout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jpnlNotasDebitoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jtxtNDebitoBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpnlNotasDebitoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpnlNotasDebitoLayout.createSequentialGroup()
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jpnlNotasDebitoLayout.createSequentialGroup()
-                        .addComponent(jbtnNotaDebitoFacturaCrearPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbtnNotaDebitoFacturaImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(82, 82, 82)
                         .addComponent(jbtnNotaDebitoNueva, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jbtnNotaDebitoBoletaCrearPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbtnNotaDebitoBoletaImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jbtnNotaDebitoImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -732,7 +631,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
 
         jpnlBajas.setBackground(new java.awt.Color(141, 170, 235));
 
-        jtblBaja.setFont(new java.awt.Font("Arial", 0, 11)); // NOI18N
+        jtblBaja.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jtblBaja.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -767,19 +666,21 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             }
         });
 
-        jbtnBajaCrearPDF.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jbtnBajaCrearPDF.setText("Crear PDF");
-        jbtnBajaCrearPDF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnBajaCrearPDFActionPerformed(evt);
-            }
-        });
-
         jbtnBajaImprimir.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jbtnBajaImprimir.setText("Imprimir");
         jbtnBajaImprimir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbtnBajaImprimirActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jLabel5.setText("Buscar:");
+
+        jtxtNDebitoBuscar1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtNDebitoBuscar1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jtxtNDebitoBuscar1KeyTyped(evt);
             }
         });
 
@@ -789,30 +690,35 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             jpnlBajasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpnlBajasLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 729, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpnlBajasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jbtnFacturaNueva1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlBajasLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                    .addGroup(jpnlBajasLayout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jpnlBajasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jbtnBajaImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jbtnBajaCrearPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jbtnBajaImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                            .addComponent(jbtnFacturaNueva1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jpnlBajasLayout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtxtNDebitoBuscar1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jpnlBajasLayout.setVerticalGroup(
             jpnlBajasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpnlBajasLayout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jpnlBajasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jtxtNDebitoBuscar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpnlBajasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpnlBajasLayout.createSequentialGroup()
                         .addComponent(jbtnFacturaNueva1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbtnBajaCrearPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbtnBajaImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -825,10 +731,10 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jlblComprobantesElectronicos)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jTabbedPane1))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -842,82 +748,46 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jbtnFacturaImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFacturaImprimirActionPerformed
-        int fila = jtblFactura.getSelectedRow();
-        if (fila != -1) {
-            String id = jtblFactura.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("Facturas", id) == true){
-                Metodos.AbrirPDF("Factura", id);
-            } else {
-                Metodos.MensajeAlerta("El PDF no existe.");
-            }
-        } else {
-            Metodos.MensajeAlerta("Seleccione una factura");
-        }
-    }//GEN-LAST:event_jbtnFacturaImprimirActionPerformed
-
     private void jbtnFacturaNuevaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFacturaNuevaActionPerformed
         JPanelFacturaNueva jpfn = new JPanelFacturaNueva();
         Metodos.CambiarPanel(jpfn);
     }//GEN-LAST:event_jbtnFacturaNuevaActionPerformed
 
-    private void jbtnFacturaCrearPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFacturaCrearPDFActionPerformed
+    private void jbtnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnImprimirActionPerformed
         int fila = jtblFactura.getSelectedRow();
         if (fila != -1) {
             String id = jtblFactura.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("Facturas", id) == true) {
-                Metodos.MensajeAlerta("El PDF ya existe.");
-            } else {
-                try {
-                    String hash = Metodos.getHash(Rutas.getRutaHash("01", id));
-                    Factura.RegistrarHash(id, hash);
-                    Factura.CrearQR(id, hash);
-                    Factura.CrearPDF(id);
-                } catch (Exception e) {
-                    System.out.println("Error creando PDF: Debe generar el XML primero\n" + e);
-                    Metodos.MensajeError("Error creando PDF: Debe generar el XML primero\n" + e);
-                }
+            try {
+                String hash = Metodos.getHash(Rutas.getRutaHash("01", id));
+                Factura.registrarHash(id, hash);
+                Factura.crearQR(id, hash);
+                Factura.crearPDF(id);
+            } catch (Exception e) {
+                System.out.println("Genere el XML primero.\n" + e);
+                Metodos.MensajeAlerta("Genere el XML primero.");
             }
         } else {
-            Metodos.MensajeAlerta("Seleccione una factura");
+            Metodos.MensajeAlerta("Seleccione una factura.");
         }
-    }//GEN-LAST:event_jbtnFacturaCrearPDFActionPerformed
+    }//GEN-LAST:event_jbtnImprimirActionPerformed
 
     private void jbtnFacturaNueva1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFacturaNueva1ActionPerformed
         JPanelBajaNueva jpbn = new JPanelBajaNueva();
         Metodos.CambiarPanel(jpbn);
     }//GEN-LAST:event_jbtnFacturaNueva1ActionPerformed
 
-    private void jbtnBajaCrearPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnBajaCrearPDFActionPerformed
-        int fila = jtblBaja.getSelectedRow();
-        if (fila != -1) {
-            String id = jtblBaja.getValueAt(fila, 3).toString();
-            if (Metodos.ExistePDF("Bajas", id) == true) {
-                Metodos.MensajeAlerta("El PDF ya existe.");
-            } else {
-                try {
-                    Baja.CrearPDF(id);
-                } catch (Exception e) {
-                    System.out.println("Error creando PDF: " + e);
-                    Metodos.MensajeError("Error creando PDF: " + e);
-                }
-            }
-        } else {
-            Metodos.MensajeAlerta("Seleccione una baja");
-        }
-    }//GEN-LAST:event_jbtnBajaCrearPDFActionPerformed
-
     private void jbtnBajaImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnBajaImprimirActionPerformed
         int fila = jtblBaja.getSelectedRow();
         if (fila != -1) {
             String id = jtblBaja.getValueAt(fila, 3).toString();
-            if (Metodos.ExistePDF("Bajas", id) == true){
-                Metodos.AbrirPDF("Baja", id);
-            } else {
-                Metodos.MensajeAlerta("El PDF no existe.");
+            try {
+                Baja.crearPDF(id);
+            } catch (Exception e) {
+                System.out.println("Error.\n" + e);
+                Metodos.MensajeAlerta("Error." +e);
             }
         } else {
-            Metodos.MensajeAlerta("Seleccione una factura");
+            Metodos.MensajeAlerta("Seleccione una baja.");
         }
     }//GEN-LAST:event_jbtnBajaImprimirActionPerformed
 
@@ -926,224 +796,115 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         Metodos.CambiarPanel(jpbn);
     }//GEN-LAST:event_jbtnBoletaNuevaActionPerformed
 
-    private void jbtnBoletaImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnBoletaImprimirActionPerformed
-        int fila = jtblBoleta.getSelectedRow();
-        if (fila != -1) {
-            String id = jtblBoleta.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("Boletas", id) == true){
-                Metodos.AbrirPDF("Boleta", id);
-            } else {
-                Metodos.MensajeAlerta("El PDF no existe.");
-            }
-        } else {
-            Metodos.MensajeAlerta("Seleccione una boleta.");
-        }
-    }//GEN-LAST:event_jbtnBoletaImprimirActionPerformed
-
-    private void jbtnBoletaCrearPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnBoletaCrearPDFActionPerformed
-        int fila = jtblBoleta.getSelectedRow();
-        if (fila != -1) {
-            String id = jtblBoleta.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("Boletas", id) == true) {
-                Metodos.MensajeAlerta("El PDF ya existe.");
-            } else {
-                try {
-                    String hash = Metodos.getHash(Rutas.getRutaHash("03", id));
-                    Boleta.RegistrarHash(id, hash);
-                    Boleta.CrearQR(id, hash);
-                    Boleta.CrearPDF(id);
-                } catch (Exception e) {
-                    System.out.println("Error creando PDF: Debe generar el XML primero\n" + e);
-                    Metodos.MensajeError("Error creando PDF: Debe generar el XML primero\n" + e);
-                }
-            }
-        } else {
-            Metodos.MensajeAlerta("Seleccione una boleta.");
-        }
-    }//GEN-LAST:event_jbtnBoletaCrearPDFActionPerformed
-
     private void jbtnNotaCreditoNuevaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaCreditoNuevaActionPerformed
         JPanelNotaCreditoNueva jpncn = new JPanelNotaCreditoNueva();
         Metodos.CambiarPanel(jpncn);
     }//GEN-LAST:event_jbtnNotaCreditoNuevaActionPerformed
 
-    private void jbtnNotaCreditoFacturaImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaCreditoFacturaImprimirActionPerformed
-        int fila = jtblNotaCreditoFactura.getSelectedRow();
+    private void jbtnNotaCreditoImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaCreditoImprimirActionPerformed
+        int fila = jtblNotaCredito.getSelectedRow();
         if (fila != -1) {
-            String id = jtblNotaCreditoFactura.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("NotasCredito", id) == true){
-                Metodos.AbrirPDF("NotaCredito", id);
-            } else {
-                Metodos.MensajeAlerta("El PDF no existe.");
+            String id = jtblNotaCredito.getValueAt(fila, 0).toString();
+            try {
+                String hash = Metodos.getHash(Rutas.getRutaHash("07", id));
+                NotaCredito.registrarHash(id, hash);
+                NotaCredito.crearQR(id, hash);
+                NotaCredito.crearPDF(id);
+            } catch (Exception e) {
+                System.out.println("Genere el XML primero.\n" + e);
+                Metodos.MensajeAlerta("Genere el XML primero.");
             }
         } else {
-            Metodos.MensajeAlerta("Seleccione una nota de crédito de factura.");
+            Metodos.MensajeAlerta("Seleccione una nota de crédito.");
         }
-    }//GEN-LAST:event_jbtnNotaCreditoFacturaImprimirActionPerformed
-
-    private void jbtnNotaCreditoFacturaCrearPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaCreditoFacturaCrearPDFActionPerformed
-        int fila = jtblNotaCreditoFactura.getSelectedRow();
-        if (fila != -1) {
-            String id = jtblNotaCreditoFactura.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("NotasCredito", id) == true) {
-                Metodos.MensajeAlerta("El PDF ya existe.");
-            } else {
-                try {
-                    String hash = Metodos.getHash(Rutas.getRutaHash("07", id));
-                    NotaCredito.RegistrarHash(id, hash);
-                    NotaCredito.CrearQR(id, hash);
-                    NotaCredito.CrearPDF(id);
-                } catch (Exception e) {
-                    System.out.println("Error creando PDF: Debe generar el XML primero\n" + e);
-                    Metodos.MensajeError("Error creando PDF: Debe generar el XML primero\n" + e);
-                }
-            }
-        } else {
-            Metodos.MensajeAlerta("Seleccione una nota de crédito de factura.");
-        }
-    }//GEN-LAST:event_jbtnNotaCreditoFacturaCrearPDFActionPerformed
-
-    private void jbtnNotaCreditoBoletaCrearPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaCreditoBoletaCrearPDFActionPerformed
-        int fila = jtblNotaCreditoBoleta.getSelectedRow();
-        if (fila != -1) {
-            String id = jtblNotaCreditoBoleta.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("NotasCredito", id) == true) {
-                Metodos.MensajeAlerta("El PDF ya existe.");
-            } else {
-                try {
-                    String hash = Metodos.getHash(Rutas.getRutaHash("07", id));
-                    NotaCredito.RegistrarHash(id, hash);
-                    NotaCredito.CrearQR(id, hash);
-                    NotaCredito.CrearPDF(id);
-                } catch (Exception e) {
-                    System.out.println("Error creando PDF: Debe generar el XML primero\n" + e);
-                    Metodos.MensajeError("Error creando PDF: Debe generar el XML primero\n" + e);
-                }
-            }
-        } else {
-            Metodos.MensajeAlerta("Seleccione una nota de crédito de boleta.");
-        }
-    }//GEN-LAST:event_jbtnNotaCreditoBoletaCrearPDFActionPerformed
-
-    private void jbtnNotaCreditoBoletaImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaCreditoBoletaImprimirActionPerformed
-        int fila = jtblNotaCreditoBoleta.getSelectedRow();
-        if (fila != -1) {
-            String id = jtblNotaCreditoBoleta.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("NotasCredito", id) == true){
-                Metodos.AbrirPDF("NotaCredito", id);
-            } else {
-                Metodos.MensajeAlerta("El PDF no existe.");
-            }
-        } else {
-            Metodos.MensajeAlerta("Seleccione una nota de crédito de boleta.");
-        }
-    }//GEN-LAST:event_jbtnNotaCreditoBoletaImprimirActionPerformed
+    }//GEN-LAST:event_jbtnNotaCreditoImprimirActionPerformed
 
     private void jbtnNotaDebitoNuevaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaDebitoNuevaActionPerformed
         JPanelNotaDebitoNueva jpndn = new JPanelNotaDebitoNueva();
         Metodos.CambiarPanel(jpndn);
     }//GEN-LAST:event_jbtnNotaDebitoNuevaActionPerformed
 
-    private void jbtnNotaDebitoFacturaImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaDebitoFacturaImprimirActionPerformed
-        int fila = jtblNotaDebitoFactura.getSelectedRow();
+    private void jbtnNotaDebitoImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaDebitoImprimirActionPerformed
+        int fila = jtblNotaDebito.getSelectedRow();
         if (fila != -1) {
-            String id = jtblNotaDebitoFactura.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("NotasDebito", id) == true){
-                Metodos.AbrirPDF("NotaDebito", id);
-            } else {
-                Metodos.MensajeAlerta("El PDF no existe.");
+            String id = jtblNotaDebito.getValueAt(fila, 0).toString();
+            try {
+                String hash = Metodos.getHash(Rutas.getRutaHash("08", id));
+                NotaDebito.registrarHash(id, hash);
+                NotaDebito.crearQR(id, hash);
+                NotaDebito.crearPDF(id);
+            } catch (Exception e) {
+                System.out.println("Genere el XML primero.\n" + e);
+                Metodos.MensajeAlerta("Genere el XML primero.");
             }
         } else {
-            Metodos.MensajeAlerta("Seleccione una nota de débito de factura.");
+            Metodos.MensajeAlerta("Seleccione una nota de débito.");
         }
-    }//GEN-LAST:event_jbtnNotaDebitoFacturaImprimirActionPerformed
+    }//GEN-LAST:event_jbtnNotaDebitoImprimirActionPerformed
 
-    private void jbtnNotaDebitoFacturaCrearPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaDebitoFacturaCrearPDFActionPerformed
-        int fila = jtblNotaDebitoFactura.getSelectedRow();
-        if (fila != -1) {
-            String id = jtblNotaDebitoFactura.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("NotasDebito", id) == true) {
-                Metodos.MensajeAlerta("El PDF ya existe.");
-            } else {
-                try {
-                    String hash = Metodos.getHash(Rutas.getRutaHash("08", id));
-                    NotaDebito.RegistrarHash(id, hash);
-                    NotaDebito.CrearQR(id, hash);
-                    NotaDebito.CrearPDF(id);
-                } catch (Exception e) {
-                    System.out.println("Error creando PDF: Debe generar el XML primero\n" + e);
-                    Metodos.MensajeError("Error creando PDF: Debe generar el XML primero\n" + e);
-                }
-            }
-        } else {
-            Metodos.MensajeAlerta("Seleccione una nota de débito de factura.");
-        }
-    }//GEN-LAST:event_jbtnNotaDebitoFacturaCrearPDFActionPerformed
+    private void jtxtFacturaBuscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxtFacturaBuscarKeyTyped
+        // mandamos 2 columnaS, nombre/rz y n doc
+        Metodos.filtrarFactura(jtxtFacturaBuscar, 0, 1, dtmFacturas, jtblFactura);
+    }//GEN-LAST:event_jtxtFacturaBuscarKeyTyped
 
-    private void jbtnNotaDebitoBoletaCrearPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaDebitoBoletaCrearPDFActionPerformed
-        int fila = jtblNotaDebitoBoleta.getSelectedRow();
+    private void jbtnBoletaImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnBoletaImprimirActionPerformed
+        int fila = jtblBoleta.getSelectedRow();
         if (fila != -1) {
-            String id = jtblNotaDebitoBoleta.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("NotasDebito", id) == true) {
-                Metodos.MensajeAlerta("El PDF ya existe.");
-            } else {
-                try {
-                    String hash = Metodos.getHash(Rutas.getRutaHash("08", id));
-                    NotaDebito.RegistrarHash(id, hash);
-                    NotaDebito.CrearQR(id, hash);
-                    NotaDebito.CrearPDF(id);
-                } catch (Exception e) {
-                    System.out.println("Error creando PDF: Debe generar el XML primero\n" + e);
-                    Metodos.MensajeError("Error creando PDF: Debe generar el XML primero\n" + e);
-                }
+            String id = jtblBoleta.getValueAt(fila, 0).toString();
+            try {
+                String hash = Metodos.getHash(Rutas.getRutaHash("03", id));
+                Boleta.registrarHash(id, hash);
+                Boleta.crearQR(id, hash);
+                Boleta.crearPDF(id);
+            } catch (Exception e) {
+                System.out.println("Genere el XML primero.\n" + e);
+                Metodos.MensajeAlerta("Genere el XML primero.");
             }
         } else {
-            Metodos.MensajeAlerta("Seleccione una nota de débito de boleta.");
+            Metodos.MensajeAlerta("Seleccione una boleta.");
         }
-    }//GEN-LAST:event_jbtnNotaDebitoBoletaCrearPDFActionPerformed
+    }//GEN-LAST:event_jbtnBoletaImprimirActionPerformed
 
-    private void jbtnNotaDebitoBoletaImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaDebitoBoletaImprimirActionPerformed
-        int fila = jtblNotaDebitoBoleta.getSelectedRow();
-        if (fila != -1) {
-            String id = jtblNotaDebitoBoleta.getValueAt(fila, 0).toString();
-            if (Metodos.ExistePDF("NotasDebito", id) == true){
-                Metodos.AbrirPDF("NotaDebito", id);
-            } else {
-                Metodos.MensajeAlerta("El PDF no existe.");
-            }
-        } else {
-            Metodos.MensajeAlerta("Seleccione una nota de débito de boleta.");
-        }
-    }//GEN-LAST:event_jbtnNotaDebitoBoletaImprimirActionPerformed
+    private void jtxtBoletaBuscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxtBoletaBuscarKeyTyped
+        Metodos.filtrarBoleta(jtxtBoletaBuscar, 0, 1, dtmBoletas, jtblBoleta);
+    }//GEN-LAST:event_jtxtBoletaBuscarKeyTyped
+
+    private void jtxtNCreditoBuscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxtNCreditoBuscarKeyTyped
+        // mandamos 4 columnaS (nota, cliente, comprobante, motivo)
+        Metodos.filtrarNotaCredito(jtxtNCreditoBuscar, 0, 1,3,4,dtmNotasCredito, jtblNotaCredito);
+    }//GEN-LAST:event_jtxtNCreditoBuscarKeyTyped
+
+    private void jtxtNDebitoBuscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxtNDebitoBuscarKeyTyped
+        // mandamos 4 columnaS (nota, cliente, comprobante, motivo)
+        Metodos.filtrarNotaCredito(jtxtNDebitoBuscar, 0, 1,3,4,dtmNotasDebito, jtblNotaDebito);
+    }//GEN-LAST:event_jtxtNDebitoBuscarKeyTyped
+
+    private void jtxtNDebitoBuscar1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxtNDebitoBuscar1KeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jtxtNDebitoBuscar1KeyTyped
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JButton jbtnBajaCrearPDF;
     private javax.swing.JButton jbtnBajaImprimir;
-    private javax.swing.JButton jbtnBoletaCrearPDF;
     private javax.swing.JButton jbtnBoletaImprimir;
     private javax.swing.JButton jbtnBoletaNueva;
-    private javax.swing.JButton jbtnFacturaCrearPDF;
-    private javax.swing.JButton jbtnFacturaImprimir;
     private javax.swing.JButton jbtnFacturaNueva;
     private javax.swing.JButton jbtnFacturaNueva1;
-    private javax.swing.JButton jbtnNotaCreditoBoletaCrearPDF;
-    private javax.swing.JButton jbtnNotaCreditoBoletaImprimir;
-    private javax.swing.JButton jbtnNotaCreditoFacturaCrearPDF;
-    private javax.swing.JButton jbtnNotaCreditoFacturaImprimir;
+    private javax.swing.JButton jbtnImprimir;
+    private javax.swing.JButton jbtnNotaCreditoImprimir;
     private javax.swing.JButton jbtnNotaCreditoNueva;
-    private javax.swing.JButton jbtnNotaDebitoBoletaCrearPDF;
-    private javax.swing.JButton jbtnNotaDebitoBoletaImprimir;
-    private javax.swing.JButton jbtnNotaDebitoFacturaCrearPDF;
-    private javax.swing.JButton jbtnNotaDebitoFacturaImprimir;
+    private javax.swing.JButton jbtnNotaDebitoImprimir;
     private javax.swing.JButton jbtnNotaDebitoNueva;
     private javax.swing.JLabel jlblComprobantesElectronicos;
     private javax.swing.JPanel jpnlBajas;
@@ -1154,9 +915,12 @@ public class JPanelComprobantes extends javax.swing.JPanel {
     private javax.swing.JTable jtblBaja;
     private javax.swing.JTable jtblBoleta;
     private javax.swing.JTable jtblFactura;
-    private javax.swing.JTable jtblNotaCreditoBoleta;
-    private javax.swing.JTable jtblNotaCreditoFactura;
-    private javax.swing.JTable jtblNotaDebitoBoleta;
-    private javax.swing.JTable jtblNotaDebitoFactura;
+    private javax.swing.JTable jtblNotaCredito;
+    private javax.swing.JTable jtblNotaDebito;
+    private javax.swing.JTextField jtxtBoletaBuscar;
+    private javax.swing.JTextField jtxtFacturaBuscar;
+    private javax.swing.JTextField jtxtNCreditoBuscar;
+    private javax.swing.JTextField jtxtNDebitoBuscar;
+    private javax.swing.JTextField jtxtNDebitoBuscar1;
     // End of variables declaration//GEN-END:variables
 }
