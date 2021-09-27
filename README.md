@@ -1,7 +1,7 @@
 # Facturador
 Exporta archivos planos para el Facturador SUNAT SFS 1.3.4.4
 
-Facturador v1.0.2
+Facturador Omashi v1.0.4
 ------------------
 
 Exporta los archivos planos para una FACTURA electrónica:
