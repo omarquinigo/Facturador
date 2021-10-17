@@ -1,10 +1,10 @@
 package vista;
 
 import controlador.Metodos;
-import controlador.Rutas;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import vista.cliente.JPanelClienteListar;
 import vista.producto.JPanelProductoListar;
 import vista.servicio.JPanelServicioListar;
@@ -12,6 +12,7 @@ import vista.servicio.JPanelServicioListar;
 public class JPanelInicio extends javax.swing.JPanel {
     
     public static String rol;
+    public static JPanel panel;
 
     public JPanelInicio(String user_rol) {
         initComponents();
@@ -46,7 +47,7 @@ public class JPanelInicio extends javax.swing.JPanel {
 
         jlblVersion.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jlblVersion.setForeground(new java.awt.Color(255, 255, 255));
-        jlblVersion.setText("Versión Facturador SUNAT 1.3.4.4");
+        jlblVersion.setText("Versión Facturador SUNAT 1.4");
 
         jlblVersionFacturadorSUNAT.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jlblVersionFacturadorSUNAT.setForeground(new java.awt.Color(255, 255, 255));
@@ -171,41 +172,31 @@ public class JPanelInicio extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbtnEjecutarSFSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnEjecutarSFSActionPerformed
-        try {
-            String unidad = Rutas.getRutaSunat().substring(0, 2);
-            String ruta = Rutas.getRutaSunat();
-            Runtime.getRuntime().exec("cmd.exe /K start EjecutarSFS.bat " + unidad + " " + ruta);
-        } catch (Exception ex) {
-            Metodos.MensajeError(ex.toString());
-        }
+        Metodos.ejecutarSfsSunat();
     }//GEN-LAST:event_jbtnEjecutarSFSActionPerformed
 
     private void jbtnAbrirBandejaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnAbrirBandejaActionPerformed
-        try {
-            Runtime.getRuntime().exec("cmd.exe /K AbrirBandeja.bat");
-        } catch (Exception ex) {
-            Metodos.MensajeError(ex.toString());
-        }
+        Metodos.abrirBandeja();
     }//GEN-LAST:event_jbtnAbrirBandejaActionPerformed
 
     private void jbntComprobantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbntComprobantesActionPerformed
         JPanelComprobantes jpc = new JPanelComprobantes();
-        Metodos.CambiarPanel(jpc);
+        Metodos.cambiarPanel(jpc);
     }//GEN-LAST:event_jbntComprobantesActionPerformed
 
     private void jbtnClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnClientesActionPerformed
         JPanelClienteListar jpcl = new JPanelClienteListar();
-        Metodos.CambiarPanel(jpcl);
+        Metodos.cambiarPanel(jpcl);
     }//GEN-LAST:event_jbtnClientesActionPerformed
 
     private void jbtnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnProductosActionPerformed
         JPanelProductoListar jppl = new JPanelProductoListar(rol);
-        Metodos.CambiarPanel(jppl);
+        Metodos.cambiarPanel(jppl);
     }//GEN-LAST:event_jbtnProductosActionPerformed
 
     private void jbtnServiciosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnServiciosActionPerformed
         JPanelServicioListar jpsl = new JPanelServicioListar(rol);
-        Metodos.CambiarPanel(jpsl);
+        Metodos.cambiarPanel(jpsl);
     }//GEN-LAST:event_jbtnServiciosActionPerformed
 
 

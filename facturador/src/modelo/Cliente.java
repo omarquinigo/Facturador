@@ -19,7 +19,7 @@ public class Cliente {
             ResultSet respuesta = stmt.executeQuery(query);
             return respuesta;
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
         return null;
     }
@@ -42,7 +42,7 @@ public class Cliente {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error generando id de cliente: \n" + e);
-            Metodos.MensajeError("Error generando id de cliente: \n" + e);
+            Metodos.mensajeError("Error generando id de cliente: \n" + e);
         }
         return Id;
     }
@@ -61,9 +61,9 @@ public class Cliente {
                     + direccion + "');";
             stmt.execute(sql);
             con.close();
-            Metodos.MensajeInformacion("Cliente registrado");
+            Metodos.mensajeInformacion("Cliente registrado");
         } catch (Exception e) {
-            Metodos.MensajeError("Error registrando cliente: \n" + e);
+            Metodos.mensajeError("Error registrando cliente: \n" + e);
         }
     }
     
@@ -82,7 +82,7 @@ public class Cliente {
             stmt.execute(sql);
             con.close();
         } catch (Exception e) {
-            Metodos.MensajeError("Error registrando cliente: \n" + e);
+            Metodos.mensajeError("Error registrando cliente: \n" + e);
         }
     }
     
@@ -103,9 +103,9 @@ public class Cliente {
                     + "where id = '" + id + "';";
             stmt.execute(sql);
             con.close();
-            Metodos.MensajeInformacion("Cliente actualizado");
+            Metodos.mensajeInformacion("Cliente actualizado");
         } catch (Exception e) {
-            Metodos.MensajeError("Error actualizando cliente.\n" + e);
+            Metodos.mensajeError("Error actualizando cliente.\n" + e);
         }
     }
 

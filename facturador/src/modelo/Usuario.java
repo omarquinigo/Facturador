@@ -17,7 +17,7 @@ public class Usuario {
             ResultSet respuesta = stmt.executeQuery(query);
             return respuesta;
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
         return null;
     }
@@ -34,9 +34,9 @@ public class Usuario {
                     + contrasena + "','" + rol + "');";
             stmt.execute(sql);
             con.close();
-            Metodos.MensajeInformacion("Usuario registrado.");
+            Metodos.mensajeInformacion("Usuario registrado.");
         } catch (Exception e) {
-            Metodos.MensajeError("Error registrando usuario: \n" + e);
+            Metodos.mensajeError("Error registrando usuario: \n" + e);
         }
     }
     
@@ -53,9 +53,9 @@ public class Usuario {
                     + "where id = '" + id + "';";
             stmt.execute(sql);
             con.close();
-            Metodos.MensajeInformacion("Usuario actualizado.");
+            Metodos.mensajeInformacion("Usuario actualizado.");
         } catch (Exception e) {
-            Metodos.MensajeError("Error actualizando usuario.\n" + e);
+            Metodos.mensajeError("Error actualizando usuario.\n" + e);
         }
     }
 

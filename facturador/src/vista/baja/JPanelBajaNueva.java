@@ -2,10 +2,6 @@ package vista.baja;
 
 import controlador.ArchivosPlanos;
 import controlador.Metodos;
-import controlador.Rutas;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.sql.ResultSet;
 import javax.swing.table.DefaultTableModel;
 import modelo.Baja;
@@ -13,7 +9,6 @@ import modelo.Boleta;
 import modelo.Factura;
 import modelo.NotaCredito;
 import modelo.NotaDebito;
-import vista.JPanelComprobantes;
 
 public class JPanelBajaNueva extends javax.swing.JPanel {
     
@@ -54,7 +49,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error generando id de baja: \n" + e);
-            Metodos.MensajeError("Error generando id de baja: \n" + e);
+            Metodos.mensajeError("Error generando id de baja: \n" + e);
         }
     }
     
@@ -77,7 +72,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando facturas: \n" + e);
-            Metodos.MensajeError("Error cargando facturas: \n" + e);
+            Metodos.mensajeError("Error cargando facturas: \n" + e);
         }
     }
     
@@ -100,7 +95,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando boletas: \n" + e);
-            Metodos.MensajeError("Error cargando boletas: \n" + e);
+            Metodos.mensajeError("Error cargando boletas: \n" + e);
         }
     }
     
@@ -135,7 +130,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando notas de crédito: \n" + e);
-            Metodos.MensajeError("Error cargando crédito: \n" + e);
+            Metodos.mensajeError("Error cargando crédito: \n" + e);
         }
     }
     
@@ -170,7 +165,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando notas de débito: \n" + e);
-            Metodos.MensajeError("Error cargando débito: \n" + e);
+            Metodos.mensajeError("Error cargando débito: \n" + e);
         }
     }
     
@@ -201,7 +196,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
     
     private void crearArchivoPlano() {
         ArchivosPlanos.apBaja(id);
-        Metodos.MensajeInformacion("Archivos planos generados.");
+        Metodos.mensajeInformacion("Archivos planos generados.");
         bloquearCampos();
         jbtnImprimir.setEnabled(true);
     }
@@ -214,7 +209,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             Baja.registrarBaja(id, fecha, fechaComprobante);
         } catch (Exception e) {
             System.out.println("Error registrando baja: \n" + e);
-            Metodos.MensajeError("Error registrando baja: \n" + e);
+            Metodos.mensajeError("Error registrando baja: \n" + e);
         }
     }
     
@@ -230,7 +225,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             }
         } catch (Exception e) {
             System.out.println("Error registrando detalle de baja: \n" + e);
-            Metodos.MensajeError("Error registrando detalle de baja: \n" + e);
+            Metodos.mensajeError("Error registrando detalle de baja: \n" + e);
         }
     }
     
@@ -338,7 +333,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 788, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -444,7 +439,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
                         .addComponent(jbtnCrearArchivosPlanos, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbtnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 40, Short.MAX_VALUE)))
+                        .addGap(0, 103, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -494,18 +489,18 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             cargarNotasDebito(fecha);
         } catch (Exception e) {
             System.out.println("Fecha incorrecta: \n" + e);
-            Metodos.MensajeError("Fecha incorrecta: \n" + e);
+            Metodos.mensajeError("Fecha incorrecta: \n" + e);
         }
     }//GEN-LAST:event_jbtnBuscarActionPerformed
 
     private void jbtnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnAgregarActionPerformed
         if (jcbxMotivo.getSelectedIndex() == 0) {
-            Metodos.MensajeAlerta("Seleccione el motivo de baja.");
+            Metodos.mensajeAlerta("Seleccione el motivo de baja.");
         } else {
             if (jtblComprobantes.getSelectedRow() >= 0) {
                 agregar();
             } else {//si no existe ninguna fila seleccionada
-                Metodos.MensajeAlerta("Debe seleccionar una comprobante.");
+                Metodos.mensajeAlerta("Debe seleccionar una comprobante.");
             }
         }
     }//GEN-LAST:event_jbtnAgregarActionPerformed
@@ -516,7 +511,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             registrarBajaDet();
             crearArchivoPlano();
         } catch (Exception e) {
-            Metodos.MensajeError("Error: "+ e);
+            Metodos.mensajeError("Error: "+ e);
         }
     }//GEN-LAST:event_jbtnCrearArchivosPlanosActionPerformed
 
@@ -525,7 +520,7 @@ public class JPanelBajaNueva extends javax.swing.JPanel {
             Baja.crearPDF(id);
         } catch (Exception e) {
             System.out.println("Error.\n" + e);
-            Metodos.MensajeAlerta("Error." + e);
+            Metodos.mensajeAlerta("Error." + e);
         }
     }//GEN-LAST:event_jbtnImprimirActionPerformed
 

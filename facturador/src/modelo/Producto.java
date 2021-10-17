@@ -17,7 +17,7 @@ public class Producto {
             ResultSet respuesta = stmt.executeQuery(query);
             return respuesta;
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
         return null;
     }
@@ -36,9 +36,9 @@ public class Producto {
                     + estado + "');";
             stmt.execute(sql);
             con.close();
-            Metodos.MensajeInformacion("Producto registrado.");
+            Metodos.mensajeInformacion("Producto registrado.");
         } catch (Exception e) {
-            Metodos.MensajeError("Error registrando producto: \n" + e);
+            Metodos.mensajeError("Error registrando producto: \n" + e);
         }
     }
     
@@ -58,9 +58,9 @@ public class Producto {
                     + "where id = '" + id + "';";
             stmt.execute(sql);
             con.close();
-            Metodos.MensajeInformacion("Producto actualizado.");
+            Metodos.mensajeInformacion("Producto actualizado.");
         } catch (Exception e) {
-            Metodos.MensajeError("Error actualizando producto.\n" + e);
+            Metodos.mensajeError("Error actualizando producto.\n" + e);
         }
     }
     

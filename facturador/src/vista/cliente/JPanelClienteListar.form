@@ -26,7 +26,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="361" max="32767" attributes="0"/>
+                      <EmptySpace pref="395" max="32767" attributes="0"/>
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="jtxtBuscar" min="-2" pref="350" max="-2" attributes="0"/>
@@ -53,7 +53,7 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" pref="507" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" pref="546" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Component id="jbtnNuevo" min="-2" pref="40" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>

@@ -45,7 +45,7 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando clientes: \n" + e);
-            Metodos.MensajeError("Error cargando clientes: \n" + e);
+            Metodos.mensajeError("Error cargando clientes: \n" + e);
         }
     }
     
@@ -58,16 +58,6 @@ public class JDialogClienteBuscar extends javax.swing.JDialog {
         //JPanelFacturaNueva jpfn = new JPanelFacturaNueva();
         //Metodos.CambiarPanel(jpfn);
         dispose();
-        //activamos objetos cabecera factura
-        //jpfn.jbtnBuscar.setEnabled(false);
-        // activamos objetos de detalle factura
-        //jpfn.jtxtCantidad.setEnabled(true);
-        //jpfn.jcbxTipoUnidad.setEnabled(true);
-        //jpfn.jtxtPrecioUnitario.setEnabled(true);
-        //jpfn.jtxtDescripcion.setEnabled(true);
-        //jpfn.jbtnAgregar.setEnabled(true);
-        //limpio cliente
-        //id = null;
     }
 
     @SuppressWarnings("unchecked")

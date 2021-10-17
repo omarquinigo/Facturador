@@ -46,7 +46,7 @@ public class JDialogServicioEditar extends javax.swing.JDialog {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando servicio: \n" + e);
-            Metodos.MensajeError("Error cargando servicio: \n" + e);
+            Metodos.mensajeError("Error cargando servicio: \n" + e);
         }
     }
     
@@ -238,10 +238,10 @@ public class JDialogServicioEditar extends javax.swing.JDialog {
 
         if (codigo.equals("")
                 || descripcion.equals("")) {
-            Metodos.MensajeAlerta("Verifique datos.");
+            Metodos.mensajeAlerta("Verifique datos.");
         } else {
             if (existeServicio(codigo, id) == true) {
-                Metodos.MensajeAlerta("El código de servicio " + codigo + " ya existe.");
+                Metodos.mensajeAlerta("El código de servicio " + codigo + " ya existe.");
             } else {
                 try {
                     if(precio1.equalsIgnoreCase(""))
@@ -252,7 +252,7 @@ public class JDialogServicioEditar extends javax.swing.JDialog {
                         precio1, precio2, estado);
                     dispose();
                 } catch (Exception e) {
-                    Metodos.MensajeError("Error actualizando servicio: " +e);
+                    Metodos.mensajeError("Error actualizando servicio: " +e);
                 }
             }
         }

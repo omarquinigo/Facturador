@@ -47,7 +47,7 @@ public class JDialogProductoServicioBuscar extends javax.swing.JDialog {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando productos: \n" + e);
-            Metodos.MensajeError("Error cargando productos: \n" + e);
+            Metodos.mensajeError("Error cargando productos: \n" + e);
         }
     }
     
@@ -69,7 +69,7 @@ public class JDialogProductoServicioBuscar extends javax.swing.JDialog {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando servicios: \n" + e);
-            Metodos.MensajeError("Error cargando servicios: \n" + e);
+            Metodos.mensajeError("Error cargando servicios: \n" + e);
         }
     }
     
@@ -382,7 +382,7 @@ public class JDialogProductoServicioBuscar extends javax.swing.JDialog {
 
     private void jtxtBuscarProductoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxtBuscarProductoKeyTyped
         // mandamos 2 columnaS, codigo y descripcion
-        Metodos.FiltrarProducto(jtxtBuscarProducto, 1, 2, dtmProductos, jtblProductos);
+        Metodos.filtrarProducto(jtxtBuscarProducto, 1, 2, dtmProductos, jtblProductos);
     }//GEN-LAST:event_jtxtBuscarProductoKeyTyped
 
     public static void main(String args[]) {

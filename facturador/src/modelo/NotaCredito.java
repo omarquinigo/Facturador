@@ -53,7 +53,7 @@ public class NotaCredito {
             stmt.execute(sql);
             con.close();
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
     }
     
@@ -85,7 +85,7 @@ public class NotaCredito {
             stmt.execute(sql);
             con.close();
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
     }
     
@@ -119,7 +119,7 @@ public class NotaCredito {
             stmt.execute(sql);
             con.close();
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
     }
     
@@ -169,7 +169,7 @@ public class NotaCredito {
                     + CodigoHash, nombre_archivo);
         } catch (Exception e) {
             System.out.println("Error creando QR: \n" +e);
-            Metodos.MensajeError("Error creando QR: \n" +e);
+            Metodos.mensajeError("Error creando QR: \n" +e);
         }
     }
     
@@ -300,11 +300,11 @@ public class NotaCredito {
                 Desktop.getDesktop().open(objetofile);
             } catch (Exception e) {
                 System.out.println("Error abriendo nota de crédito: " + id + "\n" + e);
-                Metodos.MensajeError("Error abriendo nota de crédito: " + id + "\n" + e);
+                Metodos.mensajeError("Error abriendo nota de crédito: " + id + "\n" + e);
             }
         } catch (Exception e) {
             System.out.println("Error creando PDF: " + id + "\n" + e);
-            Metodos.MensajeError("Error creando PDF: " + id + "\n" + e);
+            Metodos.mensajeError("Error creando PDF: " + id + "\n" + e);
         }
     }
     
@@ -428,11 +428,11 @@ public class NotaCredito {
                 Desktop.getDesktop().open(objetofile);
             } catch (Exception e) {
                 System.out.println("Error abriendo nota de crédito: " + id + "\n" + e);
-                Metodos.MensajeError("Error abriendo nota de crédito: " + id + "\n" + e);
+                Metodos.mensajeError("Error abriendo nota de crédito: " + id + "\n" + e);
             }
         } catch (Exception e) {
             System.out.println("Error creando PDF: " + id + "\n" + e);
-            Metodos.MensajeError("Error creando PDF: " + id + "\n" + e);
+            Metodos.mensajeError("Error creando PDF: " + id + "\n" + e);
         }
     }
 

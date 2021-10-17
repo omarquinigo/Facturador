@@ -10,7 +10,8 @@ public class JFrameSplashScreen extends javax.swing.JFrame implements Runnable{
     
     public JFrameSplashScreen() {
         initComponents();
-        Metodos.ConfigurarVentana(this,"Cargando...");
+        Metodos.configurarVentanaJFrame(this,"Cargando...");
+        this.setResizable(false);
         tiempo = new Thread(this);
         tiempo.start();
     }

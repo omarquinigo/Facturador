@@ -46,7 +46,7 @@ public class JDialogProductoEditar extends javax.swing.JDialog {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando producto: \n" + e);
-            Metodos.MensajeError("Error cargando producto: \n" + e);
+            Metodos.mensajeError("Error cargando producto: \n" + e);
         }
     }
     
@@ -238,10 +238,10 @@ public class JDialogProductoEditar extends javax.swing.JDialog {
 
         if (codigo.equals("")
                 || descripcion.equals("")) {
-            Metodos.MensajeAlerta("Verifique datos.");
+            Metodos.mensajeAlerta("Verifique datos.");
         } else {
             if (existeProducto(codigo, id) == true) {
-                Metodos.MensajeAlerta("El código de producto " + codigo + " ya existe.");
+                Metodos.mensajeAlerta("El código de producto " + codigo + " ya existe.");
             } else {
                 try {
                     if(precio1.equalsIgnoreCase(""))
@@ -252,7 +252,7 @@ public class JDialogProductoEditar extends javax.swing.JDialog {
                         precio1, precio2, estado);
                     dispose();
                 } catch (Exception e) {
-                    Metodos.MensajeError("Error actualizando producto: " +e);
+                    Metodos.mensajeError("Error actualizando producto: " +e);
                 }
             }
         }

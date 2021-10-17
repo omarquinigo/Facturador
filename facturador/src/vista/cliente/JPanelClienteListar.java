@@ -38,7 +38,7 @@ public class JPanelClienteListar extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando clientes: \n" + e);
-            Metodos.MensajeError("Error cargando clientes: \n" + e);
+            Metodos.mensajeError("Error cargando clientes: \n" + e);
         }
     }
 
@@ -123,7 +123,7 @@ public class JPanelClienteListar extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 361, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 395, Short.MAX_VALUE)
                         .addComponent(jLabel2)
                         .addGap(18, 18, 18)
                         .addComponent(jtxtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -144,7 +144,7 @@ public class JPanelClienteListar extends javax.swing.JPanel {
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jbtnNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -161,7 +161,7 @@ public class JPanelClienteListar extends javax.swing.JPanel {
             @Override
             public void windowClosed(WindowEvent e) {
                 JPanelClienteListar jpcl = new JPanelClienteListar();
-                Metodos.CambiarPanel(jpcl);
+                Metodos.cambiarPanel(jpcl);
             }
         });
         jdcn.setVisible(true);
@@ -170,7 +170,7 @@ public class JPanelClienteListar extends javax.swing.JPanel {
     private void jbtnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnEditarActionPerformed
         int fila = jtblClientes.getSelectedRow();
         if (fila == -1) {
-            Metodos.MensajeAlerta("Seleccione un cliente.");
+            Metodos.mensajeAlerta("Seleccione un cliente.");
         } else if (fila != -1) {
             String id = jtblClientes.getValueAt(fila, 0).toString();
             JFrame FormularioPrincipal = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -179,7 +179,7 @@ public class JPanelClienteListar extends javax.swing.JPanel {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     JPanelClienteListar jpcl = new JPanelClienteListar();
-                    Metodos.CambiarPanel(jpcl);
+                    Metodos.cambiarPanel(jpcl);
                 }
             });
             jdce.setVisible(true);

@@ -50,7 +50,7 @@ public class JPanelServicioListar extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando servicios: \n" + e);
-            Metodos.MensajeError("Error cargando servicios: \n" + e);
+            Metodos.mensajeError("Error cargando servicios: \n" + e);
         }
     }
 
@@ -140,7 +140,7 @@ public class JPanelServicioListar extends javax.swing.JPanel {
                         .addComponent(jLabel2)
                         .addGap(18, 18, 18)
                         .addComponent(jtxtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 865, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 899, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jbtnNuevo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -157,7 +157,7 @@ public class JPanelServicioListar extends javax.swing.JPanel {
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jbtnNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -174,7 +174,7 @@ public class JPanelServicioListar extends javax.swing.JPanel {
             @Override
             public void windowClosed(WindowEvent e) {
                 JPanelServicioListar jppl = new JPanelServicioListar(rol);
-                Metodos.CambiarPanel(jppl);
+                Metodos.cambiarPanel(jppl);
             }
         });
         jdsn.setVisible(true);
@@ -184,7 +184,7 @@ public class JPanelServicioListar extends javax.swing.JPanel {
     private void jbtnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnEditarActionPerformed
         int fila = jtblServicios.getSelectedRow();
         if (fila == -1) {
-            Metodos.MensajeAlerta("Seleccione un servicio.");
+            Metodos.mensajeAlerta("Seleccione un servicio.");
         } else if (fila != -1) {
             String id = jtblServicios.getValueAt(fila, 0).toString();
             JFrame FormularioPrincipal = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -193,7 +193,7 @@ public class JPanelServicioListar extends javax.swing.JPanel {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     JPanelServicioListar jppl = new JPanelServicioListar(rol);
-                    Metodos.CambiarPanel(jppl);
+                    Metodos.cambiarPanel(jppl);
                 }
             });
             jdse.setVisible(true);

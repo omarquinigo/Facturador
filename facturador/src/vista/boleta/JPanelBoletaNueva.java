@@ -37,7 +37,7 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
                 if(rs.getString("serieBoleta") == null || rs.getString("serieBoleta").equalsIgnoreCase("")){
                     System.out.println("Debe registrar una serie en configuraciones.");
                     jbtnBuscar.setEnabled(false);
-                    Metodos.MensajeError("Debe registrar una serie en configuraciones.");
+                    Metodos.mensajeError("Debe registrar una serie en configuraciones.");
                 } else {
                     nombreBoleta = "BB" + rs.getString("serieBoleta") + "-";
                 }
@@ -68,7 +68,7 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error generando id de boleta: \n" + e);
-            Metodos.MensajeError("Error generando id de boleta: \n" + e);
+            Metodos.mensajeError("Error generando id de boleta: \n" + e);
         }
     }
     
@@ -149,6 +149,9 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
         String tipoUnidad = jcbxTipoUnidad.getSelectedItem().toString();
         double precioUnitario = Metodos.formatoDecimalOperar(jcbxPrecioUnitario.getSelectedItem().toString());
         String codigo = jtxtCodigo.getText();
+        if(codigo.equals("")){
+            codigo = "-";
+        }
         String descripcion = jtxtDescripcion.getText();
         String tributo = Catalogos.tipoTributo("", jcbxTributo.getSelectedItem().toString(), "", "")[3];
         // calculando
@@ -257,7 +260,7 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
         String horaEmision = Metodos.ObtenerHora();
         String fechaVencimiento = Metodos.getFechaJDC(jdcFechaVencimiento);
         String moneda = jcbxMoneda.getSelectedItem().toString();
-        String medioPago = jcbxMedioPago.getSelectedItem().toString();
+        String medioPago = "";
         String totalVentasGravadas = jtxtImporte.getText();
         String totalGratuito = jtxtTotalGratuito.getText();
         String igv = jtxtIgv.getText();
@@ -267,7 +270,7 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
                     moneda, medioPago, totalVentasGravadas, totalGratuito, igv, totalImporteVenta);
         } catch (Exception e) {
             System.out.println("Error registrando boleta a la base de datos: \n" + e);
-            Metodos.MensajeError("Error registrando boleta a la base de datos: \n" + e);
+            Metodos.mensajeError("Error registrando boleta a la base de datos: \n" + e);
         }
     }
     
@@ -312,19 +315,19 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
             }
         } catch (Exception e) {
             System.out.println("Error registrando detalle de boleta en base de datos: \n" + e);
-            Metodos.MensajeError("Error registrando detalle de boleta en base de datos: \n" + e);            
+            Metodos.mensajeError("Error registrando detalle de boleta en base de datos: \n" + e);            
         }
     }
     
     private void crearArchivosPlanos(){
         boolean validar = Metodos.validarExisteAPBoleta(id);
         if (validar == true) {
-            Metodos.MensajeError("Uno o varios AP del comprobante " + id + " ya existe.\n"
+            Metodos.mensajeError("Uno o varios AP del comprobante " + id + " ya existe.\n"
                     + "Elimínelos manualmente y vuelva a crear los AP.");
             jbtnCrearArchivosPlanos.setEnabled(true);
         } else {
             ArchivosPlanos.apBoleta(id);
-            Metodos.MensajeInformacion("Archivos planos generados.");
+            Metodos.mensajeInformacion("Archivos planos generados.");
             jbtnImprimir.setEnabled(true);
             jbtnNuevoComprobante.setEnabled(true);
         }
@@ -340,8 +343,6 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
             mensaje = validarFechaVencimiento;
         } else if (validarCliente != ("")) {
             mensaje = validarCliente;
-        } else if (jcbxMedioPago.getSelectedIndex() == 0) {
-            mensaje = "Seleccione el medio de pago.";
         } else {
             mensaje = "";
         }
@@ -350,7 +351,6 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
     
     private void bloquearCampos(){
         jdcFechaVencimiento.setEnabled(false);
-        jcbxMedioPago.setEnabled(false);
         jcbxMoneda.setEnabled(false);
         jcbxTipoDocumento.setEnabled(false);
         jtxtNumeroDocumento.setEnabled(false);
@@ -384,8 +384,6 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
         jbtnBuscar = new javax.swing.JButton();
         jLabel14 = new javax.swing.JLabel();
         jtxtNumeroDocumento = new javax.swing.JTextField();
-        jLabel16 = new javax.swing.JLabel();
-        jcbxMedioPago = new javax.swing.JComboBox<>();
         jcbxTipoDocumento = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -438,7 +436,7 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
         jLabel2.setText("Tipo Doc.:");
 
         jLabel3.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jLabel3.setText("Razón Social:");
+        jLabel3.setText("Señor(es):");
 
         jLabel4.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel4.setText("Dirección:");
@@ -477,13 +475,6 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
             }
         });
 
-        jLabel16.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jLabel16.setText("Medio de pago:");
-
-        jcbxMedioPago.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jcbxMedioPago.setMaximumRowCount(9);
-        jcbxMedioPago.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Seleccione-", "Depósito en cuenta", "Giro", "Transferencia de fondos", "Orden de pago", "Tarjeta de débito", "Efectivo", "Tarjeta de crédito", "Otros" }));
-
         jcbxTipoDocumento.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jcbxTipoDocumento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DNI", "Carnet de extranjería", "Pasaporte" }));
 
@@ -506,10 +497,7 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
                         .addComponent(jLabel14)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel16)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcbxMedioPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jtxtNombreRazonSocial, javax.swing.GroupLayout.Alignment.LEADING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -524,9 +512,6 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel16)
-                        .addComponent(jcbxMedioPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel14)
                         .addComponent(jtxtNumeroDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -687,7 +672,7 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jtxtDescripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
+                                .addComponent(jtxtDescripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jbtnBuscarProductoServicio))
                             .addComponent(jcbxTributo, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -719,7 +704,7 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
                     .addComponent(jLabel9)
                     .addComponent(jcbxPrecioUnitario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -875,7 +860,7 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel13)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jlblMontoEnTexto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(jlblMontoEnTexto, javax.swing.GroupLayout.DEFAULT_SIZE, 757, Short.MAX_VALUE)))
                         .addGap(15, 15, 15)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -918,11 +903,11 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
 
     private void jbtnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnAgregarActionPerformed
         if (jtxtCantidad.getText().equalsIgnoreCase("")) {
-            Metodos.MensajeAlerta("Escriba la cantidad.");
+            Metodos.mensajeAlerta("Escriba la cantidad.");
         } else if (jtxtDescripcion.getText().equalsIgnoreCase("")) {
-            Metodos.MensajeAlerta("Escriba una descripción.");
+            Metodos.mensajeAlerta("Escriba una descripción.");
         } else if (jcbxPrecioUnitario.getSelectedItem().toString().equalsIgnoreCase("")) {
-            Metodos.MensajeAlerta("Escriba el precio unitario.");
+            Metodos.mensajeAlerta("Escriba el precio unitario.");
         } else {
             agregarDetalle();
         }
@@ -948,7 +933,7 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
                 jlblMontoEnTexto.setText("?");
             }
         } else {//no hay fila seleccionada
-            Metodos.MensajeAlerta("Seleccione un detalle");
+            Metodos.mensajeAlerta("Seleccione un detalle");
         }
     }//GEN-LAST:event_jbtnQuitarActionPerformed
 
@@ -992,7 +977,7 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
                 crearArchivosPlanos();
             }
         } else {
-            Metodos.MensajeAlerta(validar());
+            Metodos.mensajeAlerta(validar());
         }
     }//GEN-LAST:event_jbtnCrearArchivosPlanosActionPerformed
 
@@ -1067,13 +1052,13 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
             Boleta.crearPDF(id);
         } catch (Exception e) {
             System.out.println("Genere el XML primero.\n" + e);
-            Metodos.MensajeAlerta("Genere el XML primero.");
+            Metodos.mensajeAlerta("Genere el XML primero.");
         }
     }//GEN-LAST:event_jbtnImprimirActionPerformed
 
     private void jbtnNuevoComprobanteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNuevoComprobanteActionPerformed
         JPanelBoletaNueva jpfn = new JPanelBoletaNueva();
-        Metodos.CambiarPanel(jpfn);
+        Metodos.cambiarPanel(jpfn);
     }//GEN-LAST:event_jbtnNuevoComprobanteActionPerformed
 
 
@@ -1085,7 +1070,6 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
@@ -1109,7 +1093,6 @@ public class JPanelBoletaNueva extends javax.swing.JPanel {
     private javax.swing.JButton jbtnImprimir;
     private javax.swing.JButton jbtnNuevoComprobante;
     private javax.swing.JButton jbtnQuitar;
-    public static javax.swing.JComboBox<String> jcbxMedioPago;
     public static javax.swing.JComboBox<String> jcbxMoneda;
     public static javax.swing.JComboBox<String> jcbxPrecioUnitario;
     private javax.swing.JComboBox<String> jcbxTipoDocumento;

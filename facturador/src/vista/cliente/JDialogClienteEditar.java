@@ -44,7 +44,7 @@ public class JDialogClienteEditar extends javax.swing.JDialog {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando cliente: \n" + e);
-            Metodos.MensajeError("Error cargando cliente: \n" + e);
+            Metodos.mensajeError("Error cargando cliente: \n" + e);
         }
     }
 
@@ -195,18 +195,18 @@ public class JDialogClienteEditar extends javax.swing.JDialog {
         
         if (mensaje.equals("")) {
             if (Metodos.existeCliente(id, numeroDocumento) == true) {
-                Metodos.MensajeAlerta("El cliente con el número de documento " + numeroDocumento + " ya existe en el sistema.");
+                Metodos.mensajeAlerta("El cliente con el número de documento " + numeroDocumento + " ya existe en el sistema.");
             } else {
                 try {
                     Cliente.Actualizar(id, tipoDocumento, numeroDocumento,
                             nombreRazonSocial, direccion);
                     dispose();
                 } catch (Exception e) {
-                    Metodos.MensajeError("Error actualizando cliente:" + e);
+                    Metodos.mensajeError("Error actualizando cliente:" + e);
                 }
             }
         } else {
-            Metodos.MensajeAlerta(mensaje);
+            Metodos.mensajeAlerta(mensaje);
         }
     }//GEN-LAST:event_jbtnActualizarActionPerformed
 

@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -32,45 +33,13 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import modelo.Cliente;
+import vista.JFramePrincipal;
 import static vista.JFramePrincipal.jpnlPrincipal;
 
 public class Metodos {
     
     static TableRowSorter trs;
     static ResultSet rs;
-    
-    public static void ConfigurarVentana(JFrame jFrame,String tituloVentana){
-        //posiciono el frame al centro de la pantalla
-        jFrame.setLocationRelativeTo(null);
-        //activa el cambio de tamaño de la ventana
-        jFrame.setResizable(false);
-        //asigno titulo a mostrar del frame
-        jFrame.setTitle(tituloVentana);
-        //configurando logo
-        Image icono = new ImageIcon(jFrame.getClass().getResource("/img/icono.png")).getImage();//carga icono
-        jFrame.setIconImage(icono);//coloca el icono en la barra de título
-    }
-    
-    public static void MensajeError(String mensaje) {
-        JOptionPane.showMessageDialog(null, mensaje, "Error :(", JOptionPane.ERROR_MESSAGE);
-    }
-    
-    public static void MensajeInformacion(String mensaje) {
-        JOptionPane.showMessageDialog(null, mensaje, "Mensaje :)", JOptionPane.INFORMATION_MESSAGE);
-    }
-    
-    public static void MensajeAlerta(String mensaje) {
-        JOptionPane.showMessageDialog(null, mensaje, "Alerta :|", JOptionPane.WARNING_MESSAGE);
-    }
-    public static void CambiarPanel(JPanel jPanel){
-        Dimension d = jpnlPrincipal.getSize();//capturamos la dimensión del panel actual
-        jPanel.setSize(d);//le enviamos el mismo tamaño del panel principal
-        jPanel.setLocation(0,0);//que se inice desde el punto 0,0
-        jpnlPrincipal.removeAll();//quitamos los demás complementos
-        jpnlPrincipal.add(jPanel, BorderLayout.CENTER);
-        jpnlPrincipal.revalidate();
-        jpnlPrincipal.repaint();
-    }
     
     public static String ObtenerUltimosXCaracteres(String cadena, int caracteres) {
         String ultimos_caracteres = cadena.substring(cadena.length() - caracteres, cadena.length());//capturo ultimos 8 digitos
@@ -151,7 +120,7 @@ public class Metodos {
             Desktop.getDesktop().open(archivo);
         } catch (Exception e) {
             System.out.println("Error abriendo PDF: " + nombre + ".pdf\n" + e);
-            Metodos.MensajeError("Error abriendo PDF: " + nombre + ".pdf\n" + e);
+            Metodos.mensajeError("Error abriendo PDF: " + nombre + ".pdf\n" + e);
         }
     }
     
@@ -198,95 +167,50 @@ public class Metodos {
                 fecha_final = String.valueOf(sdf.format(fecha));
             }
         } catch (Exception e) {
-            Metodos.MensajeError("Error al capturar el JdateChooser 'jDateChooser'\n"+e);
+            Metodos.mensajeError("Error al capturar el JdateChooser 'jDateChooser'\n"+e);
         }
         return fecha_final;
     }
-    
 
-    
-    // obtener código de medio de Pago Catálogo 59
-    public static String ObtenerCodigoMedioPago(String mp){
-        String codigo;
-        if(mp.equalsIgnoreCase("Depósito en cuenta")){
-            codigo = "001";
-        }else if (mp.equalsIgnoreCase("Giro")){
-            codigo = "002";
-        }else if (mp.equalsIgnoreCase("Transferencia de fondos")){
-            codigo = "003";
-        }else if (mp.equalsIgnoreCase("Orden de pago")){
-            codigo = "004";
-        }else if (mp.equalsIgnoreCase("Tarjeta de débito")){
-            codigo = "005";
-        }else if (mp.equalsIgnoreCase("Efectivo")){
-            codigo = "008";
-        }else if (mp.equalsIgnoreCase("Tarjeta de crédito")){
-            codigo = "012";
-        }else{
-            codigo = "999";
-        }
-        return codigo;
-    }
-    
-    //catalogo 9
-    public static String CodigoTipoNotaCredito (JComboBox jcbxTipoNotaCredito){
-        String tipo_nota_credito;
-        int indice = jcbxTipoNotaCredito.getSelectedIndex();
-        if (indice == 1) {
-            tipo_nota_credito = "01";
-        } else if (indice == 2) {
-            tipo_nota_credito = "02";
-        } else if (indice == 3) {
-            tipo_nota_credito = "03";
-        } else if (indice == 4) {
-            tipo_nota_credito = "04";
-        } else if (indice == 5) {
-            tipo_nota_credito = "05";
-        } else if (indice == 6) {
-            tipo_nota_credito = "06";
-        } else if (indice == 7) {
-            tipo_nota_credito = "07";
-        } else if (indice == 8) {
-            tipo_nota_credito = "08";
-        } else if (indice == 9) {
-            tipo_nota_credito = "09";
-        } else {
-            tipo_nota_credito = "error";
-        }
-        return tipo_nota_credito;
-    }
-    
-    //catalogo 10
-    public static String CodigoTipoNotaDebito (JComboBox jcbxTipoNotaDebito){
-        String tipo_nota_debito;
-        int indice = jcbxTipoNotaDebito.getSelectedIndex();
-        if (indice == 1) {
-            tipo_nota_debito = "01";
-        } else if (indice == 2) {
-            tipo_nota_debito = "02";
-        } else if (indice == 3) {
-            tipo_nota_debito = "03";
-        } else {
-            tipo_nota_debito = "error";
-        } 
-        return tipo_nota_debito;
-    }
-    
-    public static String ObtenerCodigoTipoDocumento(String tipoDoc){
-        String codigo_tipo_documento = "";
-        if(tipoDoc.equalsIgnoreCase("RUC")){
-            codigo_tipo_documento = "6";
-        } else if(tipoDoc.equalsIgnoreCase("DNI")){
-            codigo_tipo_documento = "1";
-        } else if(tipoDoc.equalsIgnoreCase("Carne de extrangeria")){
-            codigo_tipo_documento = "4";
-        } else codigo_tipo_documento = "7";
-        return codigo_tipo_documento;
-    }
-    
     // ========= Métodos ==========
     
-    public static void FiltrarProducto(JTextField jtxt, int columna1,int columna2, DefaultTableModel tableModel, JTable table){
+    public static void configurarVentanaJFrame(JFrame jFrame,String tituloVentana){
+        //posiciono el frame al centro de la pantalla
+        jFrame.setLocationRelativeTo(null);
+        //activa el cambio de tamaño de la ventana
+        jFrame.setResizable(true);
+        //asigno titulo a mostrar del frame
+        jFrame.setTitle(tituloVentana);
+        //configurando logo
+        Image icono = new ImageIcon(jFrame.getClass().getResource("/img/icono.png")).getImage();//carga icono
+        jFrame.setIconImage(icono);//coloca el icono en la barra de título
+    }
+    
+    public static void cambiarPanel(JPanel jPanel){
+        JFramePrincipal.jpActivo = jPanel;// envia el panel actual
+        Dimension d = jpnlPrincipal.getSize();//capturamos la dimensión del panel actual
+        jPanel.setSize(d);//le enviamos el mismo tamaño del panel principal
+        jPanel.setLocation(0,0);//que se inice desde el punto 0,0
+        jpnlPrincipal.removeAll();//quitamos los demás complementos
+        jpnlPrincipal.add(jPanel, BorderLayout.CENTER);
+        jpnlPrincipal.revalidate();
+        jpnlPrincipal.repaint();
+        // el tamaño de ventana es 1050 x 600
+    }
+    
+    public static void mensajeError(String mensaje) {
+        JOptionPane.showMessageDialog(null, mensaje, "Error :(", JOptionPane.ERROR_MESSAGE);
+    }
+    
+    public static void mensajeInformacion(String mensaje) {
+        JOptionPane.showMessageDialog(null, mensaje, "Mensaje :)", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    public static void mensajeAlerta(String mensaje) {
+        JOptionPane.showMessageDialog(null, mensaje, "Alerta :|", JOptionPane.WARNING_MESSAGE);
+    }
+    
+    public static void filtrarProducto(JTextField jtxt, int columna1,int columna2, DefaultTableModel tableModel, JTable table){
         jtxt.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -602,6 +526,13 @@ public class Metodos {
         return num;
     }
     
+    // max 10 decimales
+    public static String formatoDecimalMostrar10Dec(double numero){
+        DecimalFormat df = new DecimalFormat("#0.00########");
+        String num = df.format(numero);
+        return num;
+    }
+    
     public static String convertirNumTexto(String numero, String moneda) {
         String moneda_texto;
         ConvertirNumeroTexto NumLetra = new ConvertirNumeroTexto();
@@ -631,7 +562,40 @@ public class Metodos {
         return fecha.replace("-", "");
     }
     
-
+    public static void abrirLink(String link) {
+        Desktop enlace = Desktop.getDesktop();
+        try {
+            enlace.browse(new URI(link));
+        } catch (Exception e) {}
+    }
+    
+    public static void ejecutarSfsSunat(){
+        try {
+            String unidad = Rutas.getRutaSunat().substring(0, 2);
+            String ruta = Rutas.getRutaSunat();
+            Runtime.getRuntime().exec("cmd.exe /K start EjecutarSFS.bat " + unidad + " " + ruta);
+        } catch (Exception ex) {
+            Metodos.mensajeError(ex.toString());
+        }
+    }
+    
+    public static void abrirBandeja(){
+        try {
+            Runtime.getRuntime().exec("cmd.exe /K AbrirBandeja.bat");
+        } catch (Exception ex) {
+            Metodos.mensajeError(ex.toString());
+        }
+    }
+    
+    public static void actualizaTamañoJPanel(JPanel jPanel){
+        Dimension d = jpnlPrincipal.getSize();//capturamos la dimensión del panel actual
+        jPanel.setSize(d);//le enviamos el mismo tamaño del panel principal
+        jPanel.setLocation(0,0);//que se inice desde el punto 0,0
+        jpnlPrincipal.removeAll();//quitamos los demás complementos
+        jpnlPrincipal.add(jPanel, BorderLayout.CENTER);
+        jpnlPrincipal.revalidate();
+        jpnlPrincipal.repaint();
+    }
     
 
 }

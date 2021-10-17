@@ -54,7 +54,7 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando facturas: \n" + e);
-            Metodos.MensajeError("Error cargando facturas: \n" + e);
+            Metodos.mensajeError("Error cargando facturas: \n" + e);
         }
     }
     
@@ -79,7 +79,7 @@ public class JDialogComprobanteBuscar extends javax.swing.JDialog {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando boletas: \n" + e);
-            Metodos.MensajeError("Error cargando boletas: \n" + e);
+            Metodos.mensajeError("Error cargando boletas: \n" + e);
         }
     }
     

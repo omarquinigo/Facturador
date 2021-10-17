@@ -12,6 +12,7 @@ import modelo.NotaCredito;
 import modelo.NotaDebito;
 import vista.baja.JPanelBajaNueva;
 import vista.boleta.JPanelBoletaNueva;
+import vista.guiaremision.JPanelGuiaRemisionNueva;
 import vista.notacredito.JPanelNotaCreditoNueva;
 import vista.notadebito.JPanelNotaDebitoNueva;
 
@@ -55,7 +56,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando facturas: \n" + e);
-            Metodos.MensajeError("Error cargando facturas: \n" + e);
+            Metodos.mensajeError("Error cargando facturas: \n" + e);
         }
     }
     
@@ -81,7 +82,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando boletas: \n" + e);
-            Metodos.MensajeError("Error cargando boletas: \n" + e);
+            Metodos.mensajeError("Error cargando boletas: \n" + e);
         }
     }
     
@@ -125,7 +126,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando notas de crédito: \n" + e);
-            Metodos.MensajeError("Error cargando notas de crédito: \n" + e);
+            Metodos.mensajeError("Error cargando notas de crédito: \n" + e);
         }
     }
     
@@ -169,7 +170,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando notas de débito: \n" + e);
-            Metodos.MensajeError("Error cargando notas de débito: \n" + e);
+            Metodos.mensajeError("Error cargando notas de débito: \n" + e);
         }
     }
     
@@ -194,7 +195,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando bajas: \n" + e);
-            Metodos.MensajeError("Error cargando bajas: \n" + e);
+            Metodos.mensajeError("Error cargando bajas: \n" + e);
         }
     }
 
@@ -232,6 +233,14 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         jbtnNotaDebitoImprimir = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jtxtNDebitoBuscar = new javax.swing.JTextField();
+        jpnlGuiasRemision = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jtblGRemision = new javax.swing.JTable();
+        jbtnGuiaRemisionNueva = new javax.swing.JButton();
+        jbtnImprimir1 = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        jtxtFacturaBuscar1 = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
         jpnlBajas = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jtblBaja = new javax.swing.JTable();
@@ -311,7 +320,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jpnlFacturasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpnlFacturasLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 875, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jpnlFacturasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jbtnFacturaNueva, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -332,7 +341,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                     .addComponent(jtxtFacturaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpnlFacturasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
                     .addGroup(jpnlFacturasLayout.createSequentialGroup()
                         .addComponent(jbtnFacturaNueva, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -407,7 +416,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jpnlBoletasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpnlBoletasLayout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 875, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jpnlBoletasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jbtnBoletaImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
@@ -428,7 +437,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                     .addComponent(jtxtBoletaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpnlBoletasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
                     .addGroup(jpnlBoletasLayout.createSequentialGroup()
                         .addComponent(jbtnBoletaNueva, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -502,7 +511,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jpnlNotasCreditoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlNotasCreditoLayout.createSequentialGroup()
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 875, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jpnlNotasCreditoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jbtnNotaCreditoImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
@@ -528,7 +537,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbtnNotaCreditoImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -597,7 +606,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jpnlNotasDebitoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlNotasDebitoLayout.createSequentialGroup()
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                        .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 875, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jpnlNotasDebitoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jbtnNotaDebitoImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
@@ -623,11 +632,119 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbtnNotaDebitoImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         jTabbedPane1.addTab("N. Débito", jpnlNotasDebito);
+
+        jpnlGuiasRemision.setBackground(new java.awt.Color(141, 170, 235));
+
+        jtblGRemision.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtblGRemision.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "G. Remisión", "Cliente", "Fecha", "Moneda", "IGV", "Importe T."
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jtblGRemision.getTableHeader().setReorderingAllowed(false);
+        jScrollPane5.setViewportView(jtblGRemision);
+        if (jtblGRemision.getColumnModel().getColumnCount() > 0) {
+            jtblGRemision.getColumnModel().getColumn(0).setPreferredWidth(80);
+            jtblGRemision.getColumnModel().getColumn(1).setPreferredWidth(300);
+            jtblGRemision.getColumnModel().getColumn(2).setPreferredWidth(60);
+            jtblGRemision.getColumnModel().getColumn(3).setPreferredWidth(50);
+            jtblGRemision.getColumnModel().getColumn(4).setPreferredWidth(80);
+            jtblGRemision.getColumnModel().getColumn(5).setPreferredWidth(80);
+        }
+
+        jbtnGuiaRemisionNueva.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jbtnGuiaRemisionNueva.setText("Nuevo");
+        jbtnGuiaRemisionNueva.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnGuiaRemisionNuevaActionPerformed(evt);
+            }
+        });
+
+        jbtnImprimir1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jbtnImprimir1.setText("Imprimir");
+        jbtnImprimir1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnImprimir1ActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jLabel6.setText("Buscar:");
+
+        jtxtFacturaBuscar1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jtxtFacturaBuscar1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jtxtFacturaBuscar1KeyTyped(evt);
+            }
+        });
+
+        jLabel7.setFont(new java.awt.Font("Arial", 0, 36)); // NOI18N
+        jLabel7.setText("P R O X I M A M E N T E   C:");
+
+        javax.swing.GroupLayout jpnlGuiasRemisionLayout = new javax.swing.GroupLayout(jpnlGuiasRemision);
+        jpnlGuiasRemision.setLayout(jpnlGuiasRemisionLayout);
+        jpnlGuiasRemisionLayout.setHorizontalGroup(
+            jpnlGuiasRemisionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpnlGuiasRemisionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jpnlGuiasRemisionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpnlGuiasRemisionLayout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtxtFacturaBuscar1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlGuiasRemisionLayout.createSequentialGroup()
+                        .addGroup(jpnlGuiasRemisionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 875, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jpnlGuiasRemisionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jbtnGuiaRemisionNueva, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jbtnImprimir1, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE))))
+                .addContainerGap())
+        );
+        jpnlGuiasRemisionLayout.setVerticalGroup(
+            jpnlGuiasRemisionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlGuiasRemisionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jpnlGuiasRemisionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(jtxtFacturaBuscar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jpnlGuiasRemisionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpnlGuiasRemisionLayout.createSequentialGroup()
+                        .addComponent(jbtnGuiaRemisionNueva, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jbtnImprimir1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("G. Remisión", jpnlGuiasRemision);
 
         jpnlBajas.setBackground(new java.awt.Color(141, 170, 235));
 
@@ -692,7 +809,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jpnlBajasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpnlBajasLayout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 875, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jpnlBajasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jbtnBajaImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
@@ -718,7 +835,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbtnBajaImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -750,7 +867,7 @@ public class JPanelComprobantes extends javax.swing.JPanel {
 
     private void jbtnFacturaNuevaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFacturaNuevaActionPerformed
         JPanelFacturaNueva jpfn = new JPanelFacturaNueva();
-        Metodos.CambiarPanel(jpfn);
+        Metodos.cambiarPanel(jpfn);
     }//GEN-LAST:event_jbtnFacturaNuevaActionPerformed
 
     private void jbtnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnImprimirActionPerformed
@@ -764,16 +881,16 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 Factura.crearPDF(id);
             } catch (Exception e) {
                 System.out.println("Genere el XML primero.\n" + e);
-                Metodos.MensajeAlerta("Genere el XML primero.");
+                Metodos.mensajeAlerta("Genere el XML primero.");
             }
         } else {
-            Metodos.MensajeAlerta("Seleccione una factura.");
+            Metodos.mensajeAlerta("Seleccione una factura.");
         }
     }//GEN-LAST:event_jbtnImprimirActionPerformed
 
     private void jbtnFacturaNueva1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFacturaNueva1ActionPerformed
         JPanelBajaNueva jpbn = new JPanelBajaNueva();
-        Metodos.CambiarPanel(jpbn);
+        Metodos.cambiarPanel(jpbn);
     }//GEN-LAST:event_jbtnFacturaNueva1ActionPerformed
 
     private void jbtnBajaImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnBajaImprimirActionPerformed
@@ -784,21 +901,21 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 Baja.crearPDF(id);
             } catch (Exception e) {
                 System.out.println("Error.\n" + e);
-                Metodos.MensajeAlerta("Error." +e);
+                Metodos.mensajeAlerta("Error." +e);
             }
         } else {
-            Metodos.MensajeAlerta("Seleccione una baja.");
+            Metodos.mensajeAlerta("Seleccione una baja.");
         }
     }//GEN-LAST:event_jbtnBajaImprimirActionPerformed
 
     private void jbtnBoletaNuevaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnBoletaNuevaActionPerformed
         JPanelBoletaNueva jpbn = new JPanelBoletaNueva();
-        Metodos.CambiarPanel(jpbn);
+        Metodos.cambiarPanel(jpbn);
     }//GEN-LAST:event_jbtnBoletaNuevaActionPerformed
 
     private void jbtnNotaCreditoNuevaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaCreditoNuevaActionPerformed
         JPanelNotaCreditoNueva jpncn = new JPanelNotaCreditoNueva();
-        Metodos.CambiarPanel(jpncn);
+        Metodos.cambiarPanel(jpncn);
     }//GEN-LAST:event_jbtnNotaCreditoNuevaActionPerformed
 
     private void jbtnNotaCreditoImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaCreditoImprimirActionPerformed
@@ -812,16 +929,16 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 NotaCredito.crearPDF(id);
             } catch (Exception e) {
                 System.out.println("Genere el XML primero.\n" + e);
-                Metodos.MensajeAlerta("Genere el XML primero.");
+                Metodos.mensajeAlerta("Genere el XML primero.");
             }
         } else {
-            Metodos.MensajeAlerta("Seleccione una nota de crédito.");
+            Metodos.mensajeAlerta("Seleccione una nota de crédito.");
         }
     }//GEN-LAST:event_jbtnNotaCreditoImprimirActionPerformed
 
     private void jbtnNotaDebitoNuevaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaDebitoNuevaActionPerformed
         JPanelNotaDebitoNueva jpndn = new JPanelNotaDebitoNueva();
-        Metodos.CambiarPanel(jpndn);
+        Metodos.cambiarPanel(jpndn);
     }//GEN-LAST:event_jbtnNotaDebitoNuevaActionPerformed
 
     private void jbtnNotaDebitoImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnNotaDebitoImprimirActionPerformed
@@ -835,10 +952,10 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 NotaDebito.crearPDF(id);
             } catch (Exception e) {
                 System.out.println("Genere el XML primero.\n" + e);
-                Metodos.MensajeAlerta("Genere el XML primero.");
+                Metodos.mensajeAlerta("Genere el XML primero.");
             }
         } else {
-            Metodos.MensajeAlerta("Seleccione una nota de débito.");
+            Metodos.mensajeAlerta("Seleccione una nota de débito.");
         }
     }//GEN-LAST:event_jbtnNotaDebitoImprimirActionPerformed
 
@@ -858,10 +975,10 @@ public class JPanelComprobantes extends javax.swing.JPanel {
                 Boleta.crearPDF(id);
             } catch (Exception e) {
                 System.out.println("Genere el XML primero.\n" + e);
-                Metodos.MensajeAlerta("Genere el XML primero.");
+                Metodos.mensajeAlerta("Genere el XML primero.");
             }
         } else {
-            Metodos.MensajeAlerta("Seleccione una boleta.");
+            Metodos.mensajeAlerta("Seleccione una boleta.");
         }
     }//GEN-LAST:event_jbtnBoletaImprimirActionPerformed
 
@@ -883,6 +1000,19 @@ public class JPanelComprobantes extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jtxtNDebitoBuscar1KeyTyped
 
+    private void jbtnGuiaRemisionNuevaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnGuiaRemisionNuevaActionPerformed
+//        JPanelGuiaRemisionNueva jpgrn = new JPanelGuiaRemisionNueva();
+//        Metodos.cambiarPanel(jpgrn);
+    }//GEN-LAST:event_jbtnGuiaRemisionNuevaActionPerformed
+
+    private void jbtnImprimir1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnImprimir1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jbtnImprimir1ActionPerformed
+
+    private void jtxtFacturaBuscar1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxtFacturaBuscar1KeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jtxtFacturaBuscar1KeyTyped
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
@@ -890,10 +1020,13 @@ public class JPanelComprobantes extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JButton jbtnBajaImprimir;
@@ -901,7 +1034,9 @@ public class JPanelComprobantes extends javax.swing.JPanel {
     private javax.swing.JButton jbtnBoletaNueva;
     private javax.swing.JButton jbtnFacturaNueva;
     private javax.swing.JButton jbtnFacturaNueva1;
+    private javax.swing.JButton jbtnGuiaRemisionNueva;
     private javax.swing.JButton jbtnImprimir;
+    private javax.swing.JButton jbtnImprimir1;
     private javax.swing.JButton jbtnNotaCreditoImprimir;
     private javax.swing.JButton jbtnNotaCreditoNueva;
     private javax.swing.JButton jbtnNotaDebitoImprimir;
@@ -910,15 +1045,18 @@ public class JPanelComprobantes extends javax.swing.JPanel {
     private javax.swing.JPanel jpnlBajas;
     private javax.swing.JPanel jpnlBoletas;
     private javax.swing.JPanel jpnlFacturas;
+    private javax.swing.JPanel jpnlGuiasRemision;
     private javax.swing.JPanel jpnlNotasCredito;
     private javax.swing.JPanel jpnlNotasDebito;
     private javax.swing.JTable jtblBaja;
     private javax.swing.JTable jtblBoleta;
     private javax.swing.JTable jtblFactura;
+    private javax.swing.JTable jtblGRemision;
     private javax.swing.JTable jtblNotaCredito;
     private javax.swing.JTable jtblNotaDebito;
     private javax.swing.JTextField jtxtBoletaBuscar;
     private javax.swing.JTextField jtxtFacturaBuscar;
+    private javax.swing.JTextField jtxtFacturaBuscar1;
     private javax.swing.JTextField jtxtNCreditoBuscar;
     private javax.swing.JTextField jtxtNDebitoBuscar;
     private javax.swing.JTextField jtxtNDebitoBuscar1;

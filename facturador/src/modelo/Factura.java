@@ -35,22 +35,38 @@ public class Factura {
         return null;
     }
 
-    public static void registrarFactura(String id, String idCliente, String fecha,
-            String horaEmision, String fechaVencimiento, String moneda,
-            String medioPago, String totalVentasGravadas, String totalGratuito, String igv,
-            String importeTotal) throws SQLException {
+    public static void registrarFactura(String id, String idCliente,
+            String fecha, String horaEmision, String fechaVencimiento,
+            String moneda, String formaPago, String cuotas, String montoCuota,
+            String medioPago, String totalVentasGravadas, String totalGratuito,
+            String igv, String importeTotal) throws SQLException {
         try {
             Connection con = Conexion.getConexion();
             Statement stmt = con.createStatement();
             String sql = "insert into factura \n"
-                    + "(id,idCliente,fecha,horaEmision,fechaVencimiento,moneda,medioPago,"
-                    + "totalVentasGravadas,totalGratuito,igv,importeTotal) \n"
+                    + "(id,"
+                    + "idCliente,"
+                    + "fecha,"
+                    + "horaEmision,"
+                    + "fechaVencimiento,"
+                    + "moneda,"
+                    + "formaPago,"
+                    + "cuotas,"
+                    + "montoCuota,"
+                    + "medioPago,"
+                    + "totalVentasGravadas,"
+                    + "totalGratuito,"
+                    + "igv,"
+                    + "importeTotal) \n"
                     + "values ('" + id + "','" 
                     + idCliente + "','" 
                     + fecha + "','" 
                     + horaEmision + "','" 
                     + fechaVencimiento + "','" 
-                    + moneda + "','" 
+                    + moneda + "','"
+                    + formaPago + "','" 
+                    + cuotas + "','" 
+                    + montoCuota + "','" 
                     + medioPago + "','" 
                     + totalVentasGravadas + "','" 
                     + totalGratuito + "','" 
@@ -59,7 +75,7 @@ public class Factura {
             stmt.execute(sql);
             con.close();
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
     }
     
@@ -91,7 +107,7 @@ public class Factura {
             stmt.execute(sql);
             con.close();
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
     }
     
@@ -125,7 +141,7 @@ public class Factura {
             stmt.execute(sql);
             con.close();
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
     }
     
@@ -166,7 +182,7 @@ public class Factura {
                     + CodigoHash, nombre_archivo);
         } catch (Exception e) {
             System.out.println("Error creando QR: \n" +e);
-            Metodos.MensajeError("Error creando QR: \n" +e);
+            Metodos.mensajeError("Error creando QR: \n" +e);
         }
     }
     
@@ -190,6 +206,7 @@ public class Factura {
         String fecha = "";
         String fechaVencimiento = "";
         String moneda = "";
+        String formaPago = "";
         // totales
         String totalVentasGravadas = "";
         String totalGratuito = "";
@@ -224,6 +241,11 @@ public class Factura {
                 fecha = rs.getString("fecha");
                 fechaVencimiento = rs.getString("fechaVencimiento");
                 moneda = rs.getString("moneda");
+                formaPago = rs.getString("formaPago");
+                if(formaPago.equals("Credito")){
+                    String cuotas = rs.getString("cuotas");
+                    formaPago = formaPago + "\n" + cuotas + " cuotas";
+                }
                 totalVentasGravadas = rs.getString("totalVentasGravadas");
                 totalGratuito = rs.getString("totalGratuito");
                 igv = rs.getString("igv");
@@ -249,6 +271,7 @@ public class Factura {
         parametro.put("fecha", fecha);
         parametro.put("fechaVencimiento", fechaVencimiento);
         parametro.put("moneda", moneda);
+        parametro.put("formaPago", formaPago);
         parametro.put("totalVentasGravadas", totalVentasGravadas);
         parametro.put("totalGratuito", totalGratuito);
         parametro.put("igv", igv);
@@ -273,11 +296,11 @@ public class Factura {
                 Desktop.getDesktop().open(objetofile);
             } catch (Exception e) {
                 System.out.println("Error abriendo factura: " + id + "\n" + e);
-                Metodos.MensajeError("Error abriendo factura: " + id + "\n" + e);
+                Metodos.mensajeError("Error abriendo factura: " + id + "\n" + e);
             }
         } catch (Exception e) {
             System.out.println("Error creando PDF: " + id + "\n" + e);
-            Metodos.MensajeError("Error creando PDF: " + id + "\n" + e);
+            Metodos.mensajeError("Error creando PDF: " + id + "\n" + e);
         }
     }
     
@@ -291,6 +314,7 @@ public class Factura {
         String horaEmision = "";
         String fechaVencimiento = "";
         String moneda = "";
+        String formaPago = "";
         // totales
         String totalVentasGravadas = "";
         String totalGratuito = "";
@@ -322,6 +346,11 @@ public class Factura {
                 horaEmision = rs.getString("horaEmision");
                 fechaVencimiento = rs.getString("fechaVencimiento");
                 moneda = rs.getString("moneda");
+                formaPago = rs.getString("formaPago").toUpperCase();
+                if(formaPago.equals("CREDITO")){
+                    String cuotas = rs.getString("cuotas");
+                    formaPago = formaPago + " " + cuotas + " CUOTAS";
+                }
                 totalVentasGravadas = rs.getString("totalVentasGravadas");
                 totalGratuito = rs.getString("totalGratuito");
                 igv = rs.getString("igv");
@@ -348,6 +377,7 @@ public class Factura {
         parametro.put("horaEmision", horaEmision);
         parametro.put("fechaVencimiento", fechaVencimiento);
         parametro.put("moneda", moneda);
+        parametro.put("formaPago", formaPago);
         parametro.put("totalVentasGravadas", totalVentasGravadas);
         parametro.put("totalGratuito", totalGratuito);
         parametro.put("igv", igv);
@@ -375,11 +405,11 @@ public class Factura {
                 Desktop.getDesktop().open(objetofile);
             } catch (Exception e) {
                 System.out.println("Error abriendo factura: " + id + "\n" + e);
-                Metodos.MensajeError("Error abriendo factura: " + id + "\n" + e);
+                Metodos.mensajeError("Error abriendo factura: " + id + "\n" + e);
             }
         } catch (Exception e) {
             System.out.println("Error creando PDF: " + id + "\n" + e);
-            Metodos.MensajeError("Error creando PDF: " + id + "\n" + e);
+            Metodos.mensajeError("Error creando PDF: " + id + "\n" + e);
         }
     }
 

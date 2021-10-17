@@ -14,7 +14,8 @@ public class JFrameLogin extends javax.swing.JFrame {
 
     public JFrameLogin() {
         initComponents();
-        Metodos.ConfigurarVentana(this, "Login");
+        Metodos.configurarVentanaJFrame(this, "Login");
+        this.setResizable(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -145,12 +146,12 @@ public class JFrameLogin extends javax.swing.JFrame {
                 JFramePrincipal jfp = new JFramePrincipal(rol);
                 jfp.setVisible(true);
             } else {
-                Metodos.MensajeAlerta("Usuario y/o contraseña incorrecto.");
+                Metodos.mensajeAlerta("Usuario y/o contraseña incorrecto.");
             }
             rs.close();
         } catch (SQLException e) {
             System.out.println("Incorrecto: \n" + e);
-            Metodos.MensajeAlerta("Incorrecto: \n" + e);
+            Metodos.mensajeAlerta("Incorrecto: \n" + e);
         }
     }//GEN-LAST:event_jbtnIngresarActionPerformed
 

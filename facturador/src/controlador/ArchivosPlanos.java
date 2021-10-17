@@ -1,6 +1,6 @@
 /*
  * Descripción de cada archivo plano
- * Anexos I y II Formato 1.3.4.4
+ * Anexos I y II Formato 1.4
  */
 package controlador;
 
@@ -17,10 +17,8 @@ import modelo.NotaDebito;
 public class ArchivosPlanos {
 
     static ResultSet rs;
-
     static String porcentajeIgv = "18.00";
-    
-    // AP (Archivos Planos) según Anexo I SUNAT
+    static String tipoUnidad = "NIU"; //number of international units
     
     // ============== Factura ===============
 
@@ -33,6 +31,8 @@ public class ArchivosPlanos {
         boolean[] tributos = tributoFactura(id);
         apFacturaTri(id, tipoComprobante, "TRI", tributos);
         apFacturaLey(id, tipoComprobante, "LEY");
+        apFacturaPag(id, tipoComprobante, "PAG");
+        apFacturaDpa(id, tipoComprobante, "DPA");
     }
 
     private static void apFacturaCab(String id, String codigoTipoComprobante, String extension) {
@@ -139,13 +139,13 @@ public class ArchivosPlanos {
                 String precioUnitarioItem = rs.getString("precioUnitarioItem");
                 
                 //36 campos
-                String codUnidadMedida = "EA";
+                String codUnidadMedida = tipoUnidad;
                 String ctdUnidadItem = catidad;
                 String codProducto = codigo;
                 String codProductoSUNAT = "-";
                 String desItem = descripcion;
-                String mtoValorUnitario = valorUnitario;
-                String sumTotTributosItem = String.valueOf(Double.parseDouble(precioUnitarioItem) * 0.18);
+                String mtoValorUnitario = Metodos.formatoDecimalMostrar10Dec(Double.parseDouble(valorUnitario));
+                String sumTotTributosItem = Metodos.formatoDecimalMostrar((Double.parseDouble(precioUnitarioItem) * 0.18));
                 //========== Tributo IGV =============
                 //Tributo: IGV(1000) - IVAP(1016) - EXP(9995) - GRA(9996) - EXO(9997) - INA(9998)
                 String codTriIGV = Catalogos.tipoTributo("", "", "", tributo)[0];
@@ -186,7 +186,7 @@ public class ArchivosPlanos {
                 // ======================================
                 String mtoPrecioVentaUnitario;
                 if (tributo.equals("IGV")) {
-                    mtoPrecioVentaUnitario = String.valueOf(
+                    mtoPrecioVentaUnitario = Metodos.formatoDecimalMostrar10Dec(
                             ((Double.parseDouble(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
                             * (Double.parseDouble(porcentajeIgv) / 100))
                             + (Double.parseDouble(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
@@ -198,7 +198,8 @@ public class ArchivosPlanos {
                         Metodos.formatoDecimalOperar(catidad)
                         * (Metodos.formatoDecimalOperar(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
                 );
-                String mtoValorReferencialUnitario = valorUnitarioGratuito;
+                String mtoValorReferencialUnitario = Metodos.formatoDecimalMostrar10Dec(
+                        Double.parseDouble(valorUnitarioGratuito));
 
                 bufferedWriter.write(
                         codUnidadMedida + "|"
@@ -237,7 +238,6 @@ public class ArchivosPlanos {
                         + mtoPrecioVentaUnitario + "|"
                         + mtoValorVentaItem + "|"
                         + mtoValorReferencialUnitario + "|\n");
-                
             }
             rs.close();
             bufferedWriter.close();
@@ -405,6 +405,88 @@ public class ArchivosPlanos {
 
     }
     
+    private static void apFacturaPag(String id, String codigoTipoComprobante, String extension) {
+        File ap = new File(Rutas.getRutaAP(codigoTipoComprobante, id, extension));
+        BufferedWriter bufferedWriter;
+        try {
+            rs = Factura.consulta("select * \n"
+                    + "from factura \n"
+                    + "where id = '" + id + "';");
+
+            String formaPago = null;
+            String importeTotal = null;
+            String moneda = null;
+
+            while (rs.next()) {
+                formaPago = rs.getString("formaPago");
+                importeTotal = rs.getString("importeTotal");
+                moneda = rs.getString("moneda");
+            }
+            rs.close();
+            bufferedWriter = new BufferedWriter(new FileWriter(ap));
+            //3 campos
+            String mtoNetoPendientePago = importeTotal;
+            String tipMonedaMtoNetoPendientePago = moneda;
+            //se escribe la linea en el archivo
+            bufferedWriter.write(
+                    formaPago + "|"
+                    + mtoNetoPendientePago + "|"
+                    + tipMonedaMtoNetoPendientePago + "|\n"
+            );
+            bufferedWriter.close();
+        } catch (Exception e) {
+            System.out.println("Error creando archivo plano " + id + "." + extension + ":\n" + e);
+            //Metodos.MensajeError("Error creando archivo plano " + id + ".PAG:\n" + e);
+        }
+
+    }
+    
+    private static void apFacturaDpa(String id, String codigoTipoComprobante, String extension) {
+        File ap = new File(Rutas.getRutaAP(codigoTipoComprobante, id, extension));
+        BufferedWriter bufferedWriter;
+        try {
+            rs = Factura.consulta("select * \n"
+                    + "from factura \n"
+                    + "where id = '" + id + "';");
+            
+            String formaPago = null;
+            int cuotas = 1;
+            String montoCuota = null;
+            String fechaVencimiento = null;
+            String moneda = null;
+
+            while (rs.next()) {
+                formaPago = rs.getString("formaPago");
+                cuotas = Integer.parseInt(rs.getString("cuotas"));
+                montoCuota = rs.getString("montoCuota");
+                fechaVencimiento = rs.getString("fechaVencimiento");
+                moneda = rs.getString("moneda");
+            }
+            rs.close();
+            
+            if(formaPago.equals("Credito")) {
+                bufferedWriter = new BufferedWriter(new FileWriter(ap));
+                //3 campos
+                String mtoCuotaPago = montoCuota;
+                String fecCuotaPago = Metodos.fechaFormatoSUNAT(fechaVencimiento);
+                String tipMonedaCuotaPago = moneda;
+                //se escribe la linea en el archivo
+                for (int i = 0; i < cuotas; i++) {
+                    bufferedWriter.write(
+                            mtoCuotaPago + "|"
+                            + fecCuotaPago + "|"
+                            + tipMonedaCuotaPago + "|\n"
+                    );
+                }
+                bufferedWriter.close();
+            }
+        } catch (Exception e) {
+            System.out.println("Error creando archivo plano " + id + "." + extension + ":\n" + e);
+            //Metodos.MensajeError("Error creando archivo plano " + id + ".DPA:\n" + e);
+        }
+
+    }
+    
     // ============== Boleta ===============
     
     public static void apBoleta(String id) {
@@ -522,13 +604,13 @@ public class ArchivosPlanos {
                 String precioUnitarioItem = rs.getString("precioUnitarioItem");
                 
                 //36 campos
-                String codUnidadMedida = "EA";
+                String codUnidadMedida = tipoUnidad;
                 String ctdUnidadItem = catidad;
                 String codProducto = codigo;
                 String codProductoSUNAT = "-";
                 String desItem = descripcion;
-                String mtoValorUnitario = valorUnitario;
-                String sumTotTributosItem = String.valueOf(Double.parseDouble(precioUnitarioItem) * 0.18);
+                String mtoValorUnitario = Metodos.formatoDecimalMostrar10Dec(Double.parseDouble(valorUnitario));
+                String sumTotTributosItem = Metodos.formatoDecimalMostrar((Double.parseDouble(precioUnitarioItem) * 0.18));
                 //========== Tributo IGV =============
                 //Tributo: IGV(1000) - IVAP(1016) - EXP(9995) - GRA(9996) - EXO(9997) - INA(9998)
                 String codTriIGV = Catalogos.tipoTributo("", "", "", tributo)[0];
@@ -569,7 +651,7 @@ public class ArchivosPlanos {
                 // ======================================
                 String mtoPrecioVentaUnitario;
                 if (tributo.equals("IGV")) {
-                    mtoPrecioVentaUnitario = String.valueOf(
+                    mtoPrecioVentaUnitario = Metodos.formatoDecimalMostrar10Dec(
                             ((Double.parseDouble(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
                             * (Double.parseDouble(porcentajeIgv) / 100))
                             + (Double.parseDouble(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
@@ -581,7 +663,8 @@ public class ArchivosPlanos {
                         Metodos.formatoDecimalOperar(catidad)
                         * (Metodos.formatoDecimalOperar(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
                 );
-                String mtoValorReferencialUnitario = valorUnitarioGratuito;
+                String mtoValorReferencialUnitario = Metodos.formatoDecimalMostrar10Dec(
+                        Double.parseDouble(valorUnitarioGratuito));
 
                 bufferedWriter.write(
                         codUnidadMedida + "|"
@@ -620,7 +703,6 @@ public class ArchivosPlanos {
                         + mtoPrecioVentaUnitario + "|"
                         + mtoValorVentaItem + "|"
                         + mtoValorReferencialUnitario + "|\n");
-                
             }
             rs.close();
             bufferedWriter.close();
@@ -922,13 +1004,13 @@ public class ArchivosPlanos {
                 String precioUnitarioItem = rs.getString("precioUnitarioItem");
                 
                 //36 campos
-                String codUnidadMedida = "EA";
+                String codUnidadMedida = tipoUnidad;
                 String ctdUnidadItem = catidad;
                 String codProducto = codigo;
                 String codProductoSUNAT = "-";
                 String desItem = descripcion;
-                String mtoValorUnitario = valorUnitario;
-                String sumTotTributosItem = String.valueOf(Double.parseDouble(precioUnitarioItem) * 0.18);
+                String mtoValorUnitario = Metodos.formatoDecimalMostrar10Dec(Double.parseDouble(valorUnitario));
+                String sumTotTributosItem = Metodos.formatoDecimalMostrar((Double.parseDouble(precioUnitarioItem) * 0.18));
                 //========== Tributo IGV =============
                 //Tributo: IGV(1000) - IVAP(1016) - EXP(9995) - GRA(9996) - EXO(9997) - INA(9998)
                 String codTriIGV = Catalogos.tipoTributo("", "", "", tributo)[0];
@@ -969,7 +1051,7 @@ public class ArchivosPlanos {
                 // ======================================
                 String mtoPrecioVentaUnitario;
                 if (tributo.equals("IGV")) {
-                    mtoPrecioVentaUnitario = String.valueOf(
+                    mtoPrecioVentaUnitario = Metodos.formatoDecimalMostrar10Dec(
                             ((Double.parseDouble(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
                             * (Double.parseDouble(porcentajeIgv) / 100))
                             + (Double.parseDouble(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
@@ -981,7 +1063,8 @@ public class ArchivosPlanos {
                         Metodos.formatoDecimalOperar(catidad)
                         * (Metodos.formatoDecimalOperar(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
                 );
-                String mtoValorReferencialUnitario = valorUnitarioGratuito;
+                String mtoValorReferencialUnitario = Metodos.formatoDecimalMostrar10Dec(
+                        Double.parseDouble(valorUnitarioGratuito));
 
                 bufferedWriter.write(
                         codUnidadMedida + "|"
@@ -1321,13 +1404,13 @@ public class ArchivosPlanos {
                 String precioUnitarioItem = rs.getString("precioUnitarioItem");
                 
                 //36 campos
-                String codUnidadMedida = "EA";
+                String codUnidadMedida = tipoUnidad;
                 String ctdUnidadItem = catidad;
                 String codProducto = codigo;
                 String codProductoSUNAT = "-";
                 String desItem = descripcion;
-                String mtoValorUnitario = valorUnitario;
-                String sumTotTributosItem = String.valueOf(Double.parseDouble(precioUnitarioItem) * 0.18);
+                String mtoValorUnitario = Metodos.formatoDecimalMostrar10Dec(Double.parseDouble(valorUnitario));
+                String sumTotTributosItem = Metodos.formatoDecimalMostrar((Double.parseDouble(precioUnitarioItem) * 0.18));
                 //========== Tributo IGV =============
                 //Tributo: IGV(1000) - IVAP(1016) - EXP(9995) - GRA(9996) - EXO(9997) - INA(9998)
                 String codTriIGV = Catalogos.tipoTributo("", "", "", tributo)[0];
@@ -1368,7 +1451,7 @@ public class ArchivosPlanos {
                 // ======================================
                 String mtoPrecioVentaUnitario;
                 if (tributo.equals("IGV")) {
-                    mtoPrecioVentaUnitario = String.valueOf(
+                    mtoPrecioVentaUnitario = Metodos.formatoDecimalMostrar10Dec(
                             ((Double.parseDouble(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
                             * (Double.parseDouble(porcentajeIgv) / 100))
                             + (Double.parseDouble(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
@@ -1380,7 +1463,8 @@ public class ArchivosPlanos {
                         Metodos.formatoDecimalOperar(catidad)
                         * (Metodos.formatoDecimalOperar(valorUnitario) + Metodos.formatoDecimalOperar(valorUnitarioGratuito))
                 );
-                String mtoValorReferencialUnitario = valorUnitarioGratuito;
+                String mtoValorReferencialUnitario = Metodos.formatoDecimalMostrar10Dec(
+                        Double.parseDouble(valorUnitarioGratuito));
 
                 bufferedWriter.write(
                         codUnidadMedida + "|"

@@ -44,7 +44,7 @@ public class JDialogUsuarioNuevo extends javax.swing.JDialog {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error generando id de usuario: \n" + e);
-            Metodos.MensajeError("Error generando id de usuario: \n" + e);
+            Metodos.mensajeError("Error generando id de usuario: \n" + e);
         }
         return Id;
     }
@@ -189,7 +189,7 @@ public class JDialogUsuarioNuevo extends javax.swing.JDialog {
         if (id.equals("")
                 || usuario.equals("")
                 || rol.equals("---SELECCIONE---")) {
-            Metodos.MensajeAlerta("Verificar datos.");
+            Metodos.mensajeAlerta("Verificar datos.");
         } else {
             if (contrasena.equalsIgnoreCase(rcontrasena)) {
                 try {
@@ -200,7 +200,7 @@ public class JDialogUsuarioNuevo extends javax.swing.JDialog {
                 }
             } else {
                 System.out.println(contrasena+"\n"+rcontrasena);
-                Metodos.MensajeAlerta("Contraseña no coincide.");
+                Metodos.mensajeAlerta("Contraseña no coincide.");
             }
         }
     }//GEN-LAST:event_jbtnRegistrarActionPerformed

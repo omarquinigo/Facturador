@@ -36,7 +36,7 @@ public class JPanelUsuarioListar extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando usuarios: \n" + e);
-            Metodos.MensajeError("Error cargando usuarios: \n" + e);
+            Metodos.mensajeError("Error cargando usuarios: \n" + e);
         }
     }
 
@@ -112,7 +112,7 @@ public class JPanelUsuarioListar extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jbtnNuevo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jbtnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(436, Short.MAX_VALUE))
+                .addContainerGap(459, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -126,7 +126,7 @@ public class JPanelUsuarioListar extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbtnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(252, Short.MAX_VALUE))
+                .addContainerGap(282, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -137,7 +137,7 @@ public class JPanelUsuarioListar extends javax.swing.JPanel {
             @Override
             public void windowClosed(WindowEvent e) {
                 JPanelUsuarioListar jpul = new JPanelUsuarioListar();
-                Metodos.CambiarPanel(jpul);
+                Metodos.cambiarPanel(jpul);
             }
         });
         jdun.setVisible(true);
@@ -146,7 +146,7 @@ public class JPanelUsuarioListar extends javax.swing.JPanel {
     private void jbtnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnEditarActionPerformed
         int fila = jtblUsuarios.getSelectedRow();
         if (fila == -1) {
-            Metodos.MensajeAlerta("Seleccione un cliente.");
+            Metodos.mensajeAlerta("Seleccione un cliente.");
         } else if (fila != -1) {
             String id = jtblUsuarios.getValueAt(fila, 0).toString();
             JFrame FormularioPrincipal = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -155,7 +155,7 @@ public class JPanelUsuarioListar extends javax.swing.JPanel {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     JPanelUsuarioListar jpcl = new JPanelUsuarioListar();
-                    Metodos.CambiarPanel(jpcl);
+                    Metodos.cambiarPanel(jpcl);
                 }
             });
             jdue.setVisible(true);

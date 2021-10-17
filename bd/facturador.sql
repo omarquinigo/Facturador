@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.0
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 27-09-2021 a las 14:57:36
--- Versión del servidor: 5.7.24
--- Versión de PHP: 7.4.16
+-- Tiempo de generación: 03-10-2021 a las 02:29:28
+-- Versión del servidor: 5.7.33
+-- Versión de PHP: 7.4.19
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -136,7 +136,7 @@ CREATE TABLE `config` (
 --
 
 INSERT INTO `config` (`id`, `ruc`, `razonSocial`, `direccion`, `telefono`, `correo`, `web`, `impresion`, `rutaSunat`, `rutaPdf`, `serieFactura`, `serieBoleta`, `serieNCreditoFactura`, `serieNCreditoBoleta`, `serieNDebitoFactura`, `serieNDebitoBoleta`) VALUES
-('1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '01', '01', '01', '01', '01', '01');
+('1', NULL, NULL, NULL, NULL, NULL, NULL, '-Seleccione-', NULL, NULL, '01', '01', '01', '01', '01', '01');
 
 -- --------------------------------------------------------
 
@@ -151,6 +151,9 @@ CREATE TABLE `factura` (
   `horaEmision` varchar(10) COLLATE utf8_spanish2_ci DEFAULT NULL,
   `fechaVencimiento` char(10) COLLATE utf8_spanish2_ci DEFAULT NULL,
   `moneda` char(3) COLLATE utf8_spanish2_ci NOT NULL,
+  `formaPago` varchar(20) COLLATE utf8_spanish2_ci DEFAULT NULL,
+  `cuotas` varchar(2) COLLATE utf8_spanish2_ci DEFAULT NULL,
+  `montoCuota` varchar(15) COLLATE utf8_spanish2_ci DEFAULT NULL,
   `medioPago` varchar(50) COLLATE utf8_spanish2_ci DEFAULT NULL,
   `totalVentasGravadas` varchar(20) COLLATE utf8_spanish2_ci NOT NULL,
   `totalGratuito` varchar(15) COLLATE utf8_spanish2_ci DEFAULT NULL,
@@ -309,6 +312,13 @@ CREATE TABLE `usuario` (
   `contrasena` varchar(100) COLLATE utf8_spanish2_ci NOT NULL,
   `rol` varchar(100) COLLATE utf8_spanish2_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+--
+-- Volcado de datos para la tabla `usuario`
+--
+
+INSERT INTO `usuario` (`id`, `usuario`, `contrasena`, `rol`) VALUES
+('1', 'admin', '1234', 'Administrador');
 
 --
 -- Índices para tablas volcadas

@@ -17,7 +17,7 @@ public class Servicio {
             ResultSet respuesta = stmt.executeQuery(query);
             return respuesta;
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
         return null;
     }
@@ -36,9 +36,9 @@ public class Servicio {
                     + estado + "');";
             stmt.execute(sql);
             con.close();
-            Metodos.MensajeInformacion("Servicio registrado.");
+            Metodos.mensajeInformacion("Servicio registrado.");
         } catch (Exception e) {
-            Metodos.MensajeError("Error registrando servicio: \n" + e);
+            Metodos.mensajeError("Error registrando servicio: \n" + e);
         }
     }
     
@@ -58,9 +58,9 @@ public class Servicio {
                     + "where id = '" + id + "';";
             stmt.execute(sql);
             con.close();
-            Metodos.MensajeInformacion("Servicio actualizado.");
+            Metodos.mensajeInformacion("Servicio actualizado.");
         } catch (Exception e) {
-            Metodos.MensajeError("Error actualizando servicio.\n" + e);
+            Metodos.mensajeError("Error actualizando servicio.\n" + e);
         }
     }
     

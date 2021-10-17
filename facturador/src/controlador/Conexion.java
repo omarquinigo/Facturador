@@ -23,7 +23,7 @@ public class Conexion {
             conexion = DriverManager.getConnection(Url, usuario, contrasena);
         } catch (Exception e) {
             System.out.println("Error al conectar a BD: \n" + e);
-            Metodos.MensajeError("Error al conectar a BD: \n" + e);
+            Metodos.mensajeError("Error al conectar a BD: \n" + e);
         }
 
         return conexion;
@@ -38,10 +38,10 @@ public class Conexion {
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             conexionTest = DriverManager.getConnection(Url, usuario, contrasena);
-            Metodos.MensajeInformacion("Conexión exitosa.");
+            Metodos.mensajeInformacion("Conexión exitosa.");
         } catch (Exception e) {
             System.out.println("Error al conectar a BD: \n" + e);
-            Metodos.MensajeError("Error al conectar a BD: \n" + e);
+            Metodos.mensajeError("Error al conectar a BD: \n" + e);
         }
     }
 

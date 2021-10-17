@@ -24,7 +24,7 @@ public class Rutas {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando ruta de SUNAT: \n" + e);
-            Metodos.MensajeError("Error cargando ruta de SUNAT: \n" + e);
+            Metodos.mensajeError("Error cargando ruta de SUNAT: \n" + e);
         }
         return rutaSunat;
     }
@@ -53,7 +53,7 @@ public class Rutas {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando ruta de los PDFs: \n" + e);
-            Metodos.MensajeError("Error cargando ruta de los PDFs: \n" + e);
+            Metodos.mensajeError("Error cargando ruta de los PDFs: \n" + e);
         }
         return rutaPdf;
     }
@@ -67,21 +67,29 @@ public class Rutas {
     
     public static String getRutaBoletaPDF(String id) {
         String ruta = getRutaPdf() + "\\Boletas\\" + id + ".pdf";
+        File directorio = new File(getRutaPdf() + "\\Boletas");
+        directorio.mkdirs();
         return ruta;
     }
     
     public static String getRutaNotaCreditoPDF(String id) {
         String ruta = getRutaPdf() + "\\Notas Credito\\" + id + ".pdf";
+        File directorio = new File(getRutaPdf() + "\\Notas Credito");
+        directorio.mkdirs();
         return ruta;
     }
     
     public static String getRutaNotaDebitoPDF(String id) {
         String ruta = getRutaPdf() + "\\Notas Debito\\" + id + ".pdf";
+        File directorio = new File(getRutaPdf() + "\\Notas Debito");
+        directorio.mkdirs();
         return ruta;
     }
     
     public static String getRutaBajaPDF(String id) {
         String ruta = getRutaPdf() + "\\Bajas\\" + id + ".pdf";
+        File directorio = new File(getRutaPdf() + "\\Bajas");
+        directorio.mkdirs();
         return ruta;
     }
     

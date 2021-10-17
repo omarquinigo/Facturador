@@ -21,7 +21,7 @@ public class Config {
             ResultSet respuesta = stmt.executeQuery(query);
             return respuesta;
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
         return null;
     }
@@ -56,9 +56,9 @@ public class Config {
                     + "where id = '1';";
             stmt.execute(sql);
             con.close();
-            Metodos.MensajeInformacion("Guardado.");
+            Metodos.mensajeInformacion("Guardado.");
         } catch (Exception e) {
-            Metodos.MensajeError("Error actualizando.\n" + e);
+            Metodos.mensajeError("Error actualizando.\n" + e);
         }
     }
 
@@ -76,7 +76,7 @@ public class Config {
             
             bw.close();
         } catch (Exception e) {
-            Metodos.MensajeError("Error: "+e);
+            Metodos.mensajeError("Error: "+e);
         }
     }
 

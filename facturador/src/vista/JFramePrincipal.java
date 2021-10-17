@@ -1,7 +1,7 @@
 package vista;
 
 import controlador.Metodos;
-import controlador.Rutas;
+import javax.swing.JPanel;
 import vista.cliente.JPanelClienteListar;
 import vista.producto.JPanelProductoListar;
 import vista.servicio.JPanelServicioListar;
@@ -10,13 +10,14 @@ import vista.usuario.JPanelUsuarioListar;
 public class JFramePrincipal extends javax.swing.JFrame {
     
     public static String rol;
+    public static JPanel jpActivo;
 
     public JFramePrincipal(String user_rol) {
         initComponents();
         rol = user_rol;
-        Metodos.ConfigurarVentana(this, "Facturador Omashi 1.0.3 | SFS SUNAT 1.3.4.4");
-        JPanelInicio jpi = new JPanelInicio(rol);
-        Metodos.CambiarPanel(jpi);
+        Metodos.configurarVentanaJFrame(this, "Facturador Omashi 1.0.4 | SFS SUNAT 1.4");
+        jpActivo = new JPanelInicio(rol);
+        Metodos.cambiarPanel(jpActivo);
         cargarRol();
     }
     
@@ -50,16 +51,21 @@ public class JFramePrincipal extends javax.swing.JFrame {
         jmiVersion = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
 
         javax.swing.GroupLayout jpnlPrincipalLayout = new javax.swing.GroupLayout(jpnlPrincipal);
         jpnlPrincipal.setLayout(jpnlPrincipalLayout);
         jpnlPrincipalLayout.setHorizontalGroup(
             jpnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1024, Short.MAX_VALUE)
+            .addGap(0, 1050, Short.MAX_VALUE)
         );
         jpnlPrincipalLayout.setVerticalGroup(
             jpnlPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 569, Short.MAX_VALUE)
+            .addGap(0, 574, Short.MAX_VALUE)
         );
 
         jMenuBar1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -221,18 +227,18 @@ public class JFramePrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jmiInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiInicioActionPerformed
-        JPanelInicio jpi = new JPanelInicio(rol);
-        Metodos.CambiarPanel(jpi);
+        jpActivo = new JPanelInicio(rol);
+        Metodos.cambiarPanel(jpActivo);
     }//GEN-LAST:event_jmiInicioActionPerformed
 
     private void jmiClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiClientesActionPerformed
-        JPanelClienteListar jpcl = new JPanelClienteListar();
-        Metodos.CambiarPanel(jpcl);
+        jpActivo = new JPanelClienteListar();
+        Metodos.cambiarPanel(jpActivo);
     }//GEN-LAST:event_jmiClientesActionPerformed
 
     private void jmiComprobantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiComprobantesActionPerformed
-        JPanelComprobantes jpc = new JPanelComprobantes();
-        Metodos.CambiarPanel(jpc);
+        jpActivo = new JPanelComprobantes();
+        Metodos.cambiarPanel(jpActivo);
     }//GEN-LAST:event_jmiComprobantesActionPerformed
 
     private void jmiVersionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiVersionActionPerformed
@@ -245,41 +251,31 @@ public class JFramePrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jmiSalirActionPerformed
 
     private void jmiConfigurarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiConfigurarActionPerformed
-        JPanelConfigurar jpc = new JPanelConfigurar();
-        Metodos.CambiarPanel(jpc);
+        jpActivo = new JPanelConfigurar();
+        Metodos.cambiarPanel(jpActivo);
     }//GEN-LAST:event_jmiConfigurarActionPerformed
 
     private void jmiEjecutarSFSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiEjecutarSFSActionPerformed
-        try {
-            String unidad = Rutas.getRutaSunat().substring(0, 2);
-            String ruta = Rutas.getRutaSunat();
-            Runtime.getRuntime().exec("cmd.exe /K start EjecutarSFS.bat " + unidad + " " + ruta);
-        } catch (Exception ex) {
-            Metodos.MensajeError(ex.toString());
-        }
+        Metodos.ejecutarSfsSunat();
     }//GEN-LAST:event_jmiEjecutarSFSActionPerformed
 
     private void jmiAbrirBandejaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiAbrirBandejaActionPerformed
-        try {
-            Runtime.getRuntime().exec("cmd.exe /K AbrirBandeja.bat");
-        } catch (Exception ex) {
-            Metodos.MensajeError(ex.toString());
-        }
+        Metodos.abrirBandeja();
     }//GEN-LAST:event_jmiAbrirBandejaActionPerformed
 
     private void jmiProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiProductosActionPerformed
-        JPanelProductoListar jppl = new JPanelProductoListar(rol);
-        Metodos.CambiarPanel(jppl);
+        jpActivo = new JPanelProductoListar(rol);
+        Metodos.cambiarPanel(jpActivo);
     }//GEN-LAST:event_jmiProductosActionPerformed
 
     private void jmiUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiUsuariosActionPerformed
-        JPanelUsuarioListar jpul = new JPanelUsuarioListar();
-        Metodos.CambiarPanel(jpul);
+        jpActivo = new JPanelUsuarioListar();
+        Metodos.cambiarPanel(jpActivo);
     }//GEN-LAST:event_jmiUsuariosActionPerformed
 
     private void jmiServiciosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiServiciosActionPerformed
-        JPanelServicioListar jpsl = new JPanelServicioListar(rol);
-        Metodos.CambiarPanel(jpsl);
+        jpActivo = new JPanelServicioListar(rol);
+        Metodos.cambiarPanel(jpActivo);
     }//GEN-LAST:event_jmiServiciosActionPerformed
 
     private void jmiCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiCerrarSesionActionPerformed
@@ -292,6 +288,10 @@ public class JFramePrincipal extends javax.swing.JFrame {
         JDialogInfo jdi = new JDialogInfo(this, true);
         jdi.setVisible(true);
     }//GEN-LAST:event_jmiInfoActionPerformed
+
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        Metodos.cambiarPanel(jpActivo);
+    }//GEN-LAST:event_formComponentResized
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

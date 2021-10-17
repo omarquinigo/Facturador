@@ -28,7 +28,7 @@ public class Baja {
             ResultSet rs = stmt.executeQuery(query);
             return rs;
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
         return null;
     }
@@ -44,7 +44,7 @@ public class Baja {
             stmt.execute(sql);
             con.close();
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
     }
     
@@ -61,7 +61,7 @@ public class Baja {
             stmt.execute(sql);
             con.close();
         } catch (Exception e) {
-            Metodos.MensajeError("Error: \n" + e);
+            Metodos.mensajeError("Error: \n" + e);
         }
     }
     
@@ -124,11 +124,11 @@ public class Baja {
                 Desktop.getDesktop().open(objetofile);
             } catch (Exception e) {
                 System.out.println("Error abriendo baja: " + id + "\n" + e);
-                Metodos.MensajeError("Error abriendo baja: " + id + "\n" + e);
+                Metodos.mensajeError("Error abriendo baja: " + id + "\n" + e);
             }
         } catch (Exception e) {
             System.out.println("Error creando PDF: " + id + "\n" + e);
-            Metodos.MensajeError("Error creando PDF: " + id + "\n" + e);
+            Metodos.mensajeError("Error creando PDF: " + id + "\n" + e);
         }
     }
     
@@ -178,11 +178,11 @@ public class Baja {
                 Desktop.getDesktop().open(objetofile);
             } catch (Exception e) {
                 System.out.println("Error abriendo baja: " + id + "\n" + e);
-                Metodos.MensajeError("Error abriendo baja: " + id + "\n" + e);
+                Metodos.mensajeError("Error abriendo baja: " + id + "\n" + e);
             }
         } catch (Exception e) {
             System.out.println("Error creando PDF: " + id + "\n" + e);
-            Metodos.MensajeError("Error creando PDF: " + id + "\n" + e);
+            Metodos.mensajeError("Error creando PDF: " + id + "\n" + e);
         }
     }
     

@@ -1,7 +1,6 @@
 package vista.cliente;
 
 import controlador.Metodos;
-import java.sql.ResultSet;
 import modelo.Cliente;
 
 public class JDialogClienteNuevo extends javax.swing.JDialog {
@@ -164,18 +163,18 @@ public class JDialogClienteNuevo extends javax.swing.JDialog {
         
         if (mensaje.equals("")) {
             if (Metodos.existeCliente(id, numeroDocumento) == true) {
-                Metodos.MensajeAlerta("El cliente con el número de documento " + numeroDocumento + " ya existe en el sistema.");
+                Metodos.mensajeAlerta("El cliente con el número de documento " + numeroDocumento + " ya existe en el sistema.");
             } else {
                 try {
                     Cliente.Registrar(id, tipoDocumento, numeroDocumento,
                             nombreRazonSocial, direccion);
                     dispose();
                 } catch (Exception e) {
-                    Metodos.MensajeError("Error registrando cliente:" + e);
+                    Metodos.mensajeError("Error registrando cliente:" + e);
                 }
             }
         } else {
-            Metodos.MensajeAlerta(mensaje);
+            Metodos.mensajeAlerta(mensaje);
         }
     }//GEN-LAST:event_jbtnRegistrarActionPerformed
 

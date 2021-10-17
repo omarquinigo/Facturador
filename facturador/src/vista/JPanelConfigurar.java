@@ -53,7 +53,7 @@ public class JPanelConfigurar extends javax.swing.JPanel {
             rs.close();
         } catch (Exception e) {
             System.out.println("Error cargando datos: \n" + e);
-            Metodos.MensajeError("Error cargando datos: \n" + e);
+            Metodos.mensajeError("Error cargando datos: \n" + e);
         }
     }
     
@@ -456,7 +456,7 @@ public class JPanelConfigurar extends javax.swing.JPanel {
                     serieNDebitoFactura, serieNDebitooBoleta, rutaSunat, rutaPdf);
         } catch (Exception e) {
             System.out.println("Error guardando cambios:\n" + e);
-            Metodos.MensajeError("Error guardando cambios:\n" + e);
+            Metodos.mensajeError("Error guardando cambios:\n" + e);
         }
     }//GEN-LAST:event_jbtnGuardarActionPerformed
 

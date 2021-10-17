@@ -232,7 +232,7 @@ public class JDialogConexion extends javax.swing.JDialog {
             c.getConexionTest(host, puerto, baseDatos, usuario, contrasena);
 
         } catch (Exception e) {
-            Metodos.MensajeError("Error: " + e);
+            Metodos.mensajeError("Error: " + e);
         }
     }//GEN-LAST:event_jbtnProbarActionPerformed
 

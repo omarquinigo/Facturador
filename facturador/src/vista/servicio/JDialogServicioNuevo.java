@@ -215,10 +215,10 @@ public class JDialogServicioNuevo extends javax.swing.JDialog {
         
         if (codigo.equals("")
                 || descripcion.equals("")) {
-            Metodos.MensajeAlerta("Verificar datos.");
+            Metodos.mensajeAlerta("Verificar datos.");
         } else {
             if (existeServicio(codigo) == true) {
-                Metodos.MensajeAlerta("El código de servicio " + codigo + " \n"
+                Metodos.mensajeAlerta("El código de servicio " + codigo + " \n"
                         + "ya existe.");
             } else {
                 try {
